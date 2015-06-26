@@ -1,7 +1,13 @@
 #include "mainwindow.h"
+#include "canvas.h"
+
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
+#include <QElapsedTimer>
+
+#include <TApplication.h>
+#include <TSystem.h>
 
 /***************************************************************
 *	File	: 	WaveCat64ch_Sample.c						    *
@@ -128,7 +134,7 @@ Boolean RateRunStopRequested = FALSE;
 /* ========================= Static functions ================================== */
 /* ============================================================================= */
 
-static int Start_Acquisition ();
+static int Start_Acquisition (QMainCanvas *canvas);
 
 static void Stop_run (void);
 static void Start_run (void);
@@ -148,9 +154,16 @@ static int 	Set_Color(int channel);
 /* ============================================================================ */
 int main(int argc, char *argv[])
 {
+    TApplication rootapp("Simple Qt ROOT Application", &argc, argv);
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+//    MainWindow w;
+//    w.show();
+
+    QMainCanvas m(0);
+    m.resize(m.sizeHint());
+    m.setWindowTitle("Qt Example - Canvas");
+    m.setGeometry( 100, 100, 700, 500 );
+    m.show();
 
     int errCode = WAVECAT64CH_OpenDevice(&DeviceHandle);
 
@@ -164,7 +177,7 @@ int main(int argc, char *argv[])
 
         WAVECAT64CH_StopRun();
 
-        Start_Acquisition();
+        Start_Acquisition(&m);
     }
 
     return a.exec();
@@ -220,7 +233,7 @@ unsigned char coincidenceMask;
 }
 
 /* ============================================================================ */
-static int Start_Acquisition ()
+static int Start_Acquisition (QMainCanvas* canvas)
 /* ============================================================================ */
 {
 //int channel, channelToPlot;
@@ -244,8 +257,13 @@ static int Start_Acquisition ()
     //SetAxisScalingMode (MainPanelHandle, MAINPANEL_GRAPH, VAL_LEFT_YAXIS, VAL_MANUAL, -5, 5);
 //    SetAxisScalingMode (MainPanelHandle, MAINPANEL_GRAPH, VAL_BOTTOM_XAXIS, VAL_MANUAL, 0, 1024);
 
-    for(;;)
+    QElapsedTimer eltim;
+    eltim.start();
+    for(int j=0; j < 10; j++)
     {
+    for(int i=0; i < 2000; i++)
+    {
+
         Prepare_Event();
         errCode = WAVECAT64CH_CommError;
 
@@ -270,16 +288,21 @@ static int Start_Acquisition ()
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
 
-        for (int i = 0; i < CurrentEvent.ChannelData[channel].WaveformDataSize; ++i) {
-            out << CurrentEvent.ChannelData[channel].WaveformData[i] << endl;
-        }
+        canvas->DrawWaveform(CurrentEvent.ChannelData[channel].WaveformData, CurrentEvent.ChannelData[channel].WaveformDataSize);
+//        for (int i = 0; i < CurrentEvent.ChannelData[channel].WaveformDataSize; ++i) {
+//            out << CurrentEvent.ChannelData[channel].WaveformData[i] << endl;
+//        }
 
         if(errCode < 0)
             break;
 
-        StopAcquisition = TRUE;
+//        StopAcquisition = TRUE;
         if(StopAcquisition == TRUE)
             break;
+//        out << eltim.restart() << endl;
+    }
+
+    qDebug() << eltim.restart() << endl;
     }
 
     Stop_run();
@@ -287,8 +310,6 @@ static int Start_Acquisition ()
     qDebug() << "done";
 
     AcquisitionRunning = FALSE;
-
-//    SetCtrlAttribute(MainPanelHandle, MAINPANEL_START, ATTR_DIMMED, 0);
 
     return 0;
 }
