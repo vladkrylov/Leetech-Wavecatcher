@@ -3,6 +3,7 @@
 #define EXAMPLE_H
 
 #include <QWidget>
+#include "WaveCat64ch_Lib.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -39,11 +40,11 @@ public:
    virtual ~QMainCanvas() {}
    virtual void changeEvent(QEvent * e);
 
-   void DrawWaveform(float* data, int size);
 
 public slots:
    void clicked1();
    void handle_root_events();
+   void DrawWaveform(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
 protected:
    QRootCanvas    *canvas;

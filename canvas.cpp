@@ -18,6 +18,7 @@
 #include <TGraph.h>
 #include <TFrame.h>
 #include <TTimer.h>
+
 #include "canvas.h"
 
 //------------------------------------------------------------------------------
@@ -143,8 +144,8 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
    l->addWidget(b = new QPushButton("&Draw Histogram", this));
    connect(b, SIGNAL(clicked()), this, SLOT(clicked1()));
    fRootTimer = new QTimer(this);
-   QObject::connect( fRootTimer, SIGNAL(timeout()), this, SLOT(handle_root_events()) );
-   fRootTimer->start(20);
+//   QObject::connect( fRootTimer, SIGNAL(timeout()), this, SLOT(handle_root_events()) );
+//   fRootTimer->start(20);
 }
 
 //______________________________________________________________________________
@@ -203,8 +204,12 @@ void QMainCanvas::changeEvent(QEvent * e)
    }
 }
 
-void QMainCanvas::DrawWaveform(float* data, int size)
+void QMainCanvas::DrawWaveform(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 {
+    int channel = 0;
+    float* data = ChannelData[channel].WaveformData;
+    int size = ChannelData[channel].WaveformDataSize;
+
     canvas->getCanvas()->Clear();
     canvas->getCanvas()->cd();
     canvas->getCanvas()->SetBorderMode(0);
