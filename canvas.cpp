@@ -204,7 +204,7 @@ void QMainCanvas::changeEvent(QEvent * e)
    }
 }
 
-void QMainCanvas::DrawWaveform(const WAVECAT64CH_ChannelDataStruct* ChannelData)
+void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 {
     int channel = 0;
     float* data = ChannelData[channel].WaveformData;

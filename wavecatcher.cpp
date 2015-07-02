@@ -13,6 +13,7 @@
 #include "wavecatcher.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 
 Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
 //    ChannelInCoincidenceForRateHandle {
@@ -55,7 +56,6 @@ Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
 
 Wavecatcher::~Wavecatcher()
 {
-    qDebug() << "Wavecatcher was deleted.";
 }
 
 void Wavecatcher::Init_LocalVariables()
@@ -112,6 +112,9 @@ int Wavecatcher::Start_Acquisition()
     int channel = 0;
     WAVECAT64CH_ErrCode errCode;
 
+    QElapsedTimer eltim;
+    eltim.start();
+
     StopAcquisition = FALSE;
 
     EventNumber = 0;
@@ -120,7 +123,7 @@ int Wavecatcher::Start_Acquisition()
 
     AcquisitionRunning = TRUE;
 
-    for(int i=0; i < 1000; i++)
+    for(int i=0; i < 2000; i++)
     {
 
         Prepare_Event();
@@ -146,7 +149,10 @@ int Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        emit DataReceived(CurrentEvent.ChannelData);
+        if (eltim.elapsed() > 20) {
+            eltim.restart();
+            emit DataReceived(CurrentEvent.ChannelData);
+        }
 
         if(errCode < 0)
             break;

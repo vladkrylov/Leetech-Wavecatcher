@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-class QMainCanvas;
 class Wavecatcher;
+class MainWindow;
 
 class Controller : public QObject
 {
@@ -15,7 +15,7 @@ public:
 
 private:
     Wavecatcher* wc;
-    QMainCanvas* view;
+    MainWindow* view;
 
 signals:
 

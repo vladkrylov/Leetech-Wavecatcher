@@ -44,7 +44,7 @@ public:
 public slots:
    void clicked1();
    void handle_root_events();
-   void DrawWaveform(const WAVECAT64CH_ChannelDataStruct* ChannelData);
+   void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
 protected:
    QRootCanvas    *canvas;

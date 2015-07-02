@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT       += printsupport
 
 CONFIG   += qt warn_on thread
 
@@ -19,8 +18,7 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     canvas.cpp \
     wavecatcher.cpp \
-    controller.cpp \
-    qcustomplot.cpp
+    controller.cpp
 
 HEADERS  += mainwindow.h \
     WaveCat64ch_Lib.h \
@@ -28,8 +26,7 @@ HEADERS  += mainwindow.h \
     WaveCat64Ch_Sample.h \
     canvas.h \
     wavecatcher.h \
-    controller.h \
-    qcustomplot.h
+    controller.h
 
 INCLUDEPATH += "C:\Program Files (x86)\National Instruments\CVI2009\include"
 
