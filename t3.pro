@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += printsupport
+
 CONFIG   += qt warn_on thread
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -17,7 +19,8 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     canvas.cpp \
     wavecatcher.cpp \
-    controller.cpp
+    controller.cpp \
+    qcustomplot.cpp
 
 HEADERS  += mainwindow.h \
     WaveCat64ch_Lib.h \
@@ -25,11 +28,12 @@ HEADERS  += mainwindow.h \
     WaveCat64Ch_Sample.h \
     canvas.h \
     wavecatcher.h \
-    controller.h
+    controller.h \
+    qcustomplot.h
 
 INCLUDEPATH += "C:\Program Files (x86)\National Instruments\CVI2009\include"
 
-FORMS    += mainwindow.ui
+#FORMS    +=
 
 LIBS += -L"C:\Program Files (x86)\National Instruments\CVI2009\extlib\msvc" \
         -lcvirt -lcvi_lvrt -linstrsup
