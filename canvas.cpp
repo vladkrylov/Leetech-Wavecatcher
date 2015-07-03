@@ -141,45 +141,22 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
 
    QVBoxLayout *l = new QVBoxLayout(this);
    l->addWidget(canvas = new QRootCanvas(this));
-//   canvas = new QRootCanvas(this);
-//   l->addWidget(b = new QPushButton("&Draw Histogram", this));
-//   connect(b, SIGNAL(clicked()), this, SLOT(clicked1()));
-   fRootTimer = new QTimer(this);
-//   QObject::connect( fRootTimer, SIGNAL(timeout()), this, SLOT(handle_root_events()) );
-//   fRootTimer->start(20);
+   canvas->getCanvas()->SetGrid();
+   canvas->getCanvas()->Pad()->SetGrid();
+
+   float h = 900.;
+   for (int ch = 0; ch < N_CHANNELS; ++ch) {
+       gr[ch] = new TGraph();
+       gr[ch]->SetLineColor(ch+1);
+
+       baselines[ch] = (ch+1) * h / (N_CHANNELS + 1);
+       enabled[ch] = true;
+   }
+   gr[0]->SetLineColor(46);
+
+   gr[0]->SetMaximum(h);
+   gr[0]->SetMinimum(0);
 }
-
-//______________________________________________________________________________
-//void QMainCanvas::clicked1()
-//{
-//   // Handle the "Draw Histogram" button clicked() event.
-
-//   static TH1F *h1f = 0;
-//   new TFormula("form1","abs(sin(x)/x)");
-//   TF1 *sqroot = new TF1("sqroot","x*gaus(0) + [3]*form1", 0, 10);
-//   sqroot->SetParameters(10, 4, 1, 20);
-
-//   // Create a one dimensional histogram (one float per bin)
-//   // and fill it following the distribution in function sqroot.
-//   canvas->getCanvas()->Clear();
-//   canvas->getCanvas()->cd();
-//   canvas->getCanvas()->SetBorderMode(0);
-//   canvas->getCanvas()->SetFillColor(0);
-//   canvas->getCanvas()->SetGrid();
-
-//   static TGraph* test_gr = new TGraph();
-//   for (int i = 0; i < 100; ++i) {
-//       test_gr->SetPoint(i, i, i*i);
-//   }
-
-//   test_gr->SetFillColor(kViolet + 2);
-//   test_gr->SetFillStyle(3001);
-//   test_gr->Draw();
-
-//   canvas->getCanvas()->Modified();
-//   canvas->getCanvas()->Resize();
-//   canvas->getCanvas()->Update();
-//}
 
 //______________________________________________________________________________
 void QMainCanvas::handle_root_events()
@@ -207,24 +184,33 @@ void QMainCanvas::changeEvent(QEvent * e)
 
 void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 {
-    int channel = 0;
-    float* data = ChannelData[channel].WaveformData;
-    int size = ChannelData[channel].WaveformDataSize;
+    int size = ChannelData[0].WaveformDataSize;
 
-    canvas->getCanvas()->Clear();
-    canvas->getCanvas()->cd();
-    canvas->getCanvas()->SetBorderMode(0);
-    canvas->getCanvas()->SetFillColor(0);
-    canvas->getCanvas()->SetGrid();
+//    canvas->getCanvas()->Clear();
+//    canvas->getCanvas()->cd();
+//    canvas->getCanvas()->SetBorderMode(0);
+//    canvas->getCanvas()->SetFillColor(0);
+//    canvas->getCanvas()->SetGrid();
 
-    static TGraph* gr = new TGraph();
-    for (int i = 0; i < size; ++i) {
-        gr->SetPoint(i, i, data[i]);
+//    gr[0]->Set(size);
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        for (int i = 0; i < size; ++i) {
+            gr[ch]->SetPoint(i, i, ChannelData[ch].WaveformData[i] + baselines[ch]);
+        }
     }
 
-    gr->SetFillColor(kViolet + 2);
-    gr->SetFillStyle(3001);
-    gr->Draw();
+    gr[0]->SetFillColor(kViolet + 2);
+    gr[0]->SetFillStyle(3001);
+    gr[0]->GetXaxis()->SetLimits(0, size);
+    gr[0]->GetXaxis()->SetLabelSize(0);
+    gr[0]->GetXaxis()->SetNdivisions(10, false);
+    gr[0]->GetYaxis()->SetNdivisions(9, false);
+    gr[0]->GetYaxis()->SetLabelSize(0);
+
+    gr[0]->Draw();
+//    for (int i = 0; i < N_CHANNELS; ++i) {
+//        gr[i]->Draw("same");
+//    }
 
     canvas->getCanvas()->Modified();
     canvas->getCanvas()->Resize();

@@ -123,7 +123,8 @@ int Wavecatcher::Start_Acquisition()
 
     AcquisitionRunning = TRUE;
 
-    for(int i=0; i < 5000; i++)
+    for(;;)
+//    for(int i=0; i < 4000; i++)
     {
 
         Prepare_Event();
@@ -149,10 +150,14 @@ int Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        if (eltim.elapsed() > 500) {
+        if (eltim.elapsed() > 1000) {
             eltim.restart();
             emit DataReceived(CurrentEvent.ChannelData);
         }
+//        if (plot) {
+//            emit PlotData(CurrentEvent.ChannelData);
+//            plot = false;
+//        }
 
         if(errCode < 0)
             break;
@@ -193,4 +198,9 @@ int Wavecatcher::Open(int* handle)
     WAVECAT64CH_PrepareEvent();
 }
 
+ void Wavecatcher::PlotEnable(bool a)
+ {
+     plot = true;
+     qDebug() << "!";
+ }
 

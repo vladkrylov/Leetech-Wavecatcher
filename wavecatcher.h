@@ -64,7 +64,6 @@ public:
 
 private:
     void Init_LocalVariables();
-    void Stop_run();
     void Start_run();
     void Prepare_Event();
     int  Run_WithRateCounters();
@@ -135,11 +134,16 @@ private:
     float ChannelHitRate[MAX_NB_OF_CHANNELS];
     Boolean RateRunStopRequested;
 
+    //---------------------------------------------------------
+    bool plot;
+
 signals:
     void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
+    void PlotData(const WAVECAT64CH_ChannelDataStruct*);
 
 public slots:
-
+    void PlotEnable(bool a);
+    void Stop_run();
 };
 
 #endif // WAVECATCHER_H

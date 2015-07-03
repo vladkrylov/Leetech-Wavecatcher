@@ -17,6 +17,8 @@ private:
     Wavecatcher* wc;
     MainWindow* view;
 
+    void ConnectSignalSlots();
+
 signals:
 
 public slots:

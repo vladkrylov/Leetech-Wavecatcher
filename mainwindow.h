@@ -5,6 +5,7 @@
 #include "WaveCat64ch_Lib.h"
 
 #include <QMainWindow>
+#include <QtWidgets>
 
 class QMainCanvas;
 
@@ -18,11 +19,18 @@ public:
 
     void Test();
 
+    // GUI elements
+    QPushButton* updateButton;
+    QPushButton* stopButton;
+
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
 private:
+    QWidget* cw;
     QMainCanvas* scope;
+
+    void ConstructGUI();
 
 };
 

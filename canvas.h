@@ -10,6 +10,9 @@ class QResizeEvent;
 class QMouseEvent;
 class QTimer;
 class TCanvas;
+class TGraph;
+
+const int N_CHANNELS = 8;
 
 class QRootCanvas : public QWidget
 {
@@ -43,6 +46,11 @@ public:
 public slots:
    void handle_root_events();
    void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
+
+private:
+   bool enabled[N_CHANNELS];
+   float baselines[N_CHANNELS];
+   TGraph* gr[N_CHANNELS];
 
 protected:
    QRootCanvas    *canvas;
