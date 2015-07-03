@@ -75,7 +75,7 @@ void QRootCanvas::mousePressEvent( QMouseEvent *e )
             break;
          case Qt::RightButton :
             // does not work properly on Linux...
-            // ...adding setAttribute(Qt::WA_PaintOnScreen, true) 
+            // ...adding setAttribute(Qt::WA_PaintOnScreen, true)
             // seems to cure the problem
             fCanvas->HandleInput(kButton3Down, e->x(), e->y());
             break;
@@ -100,7 +100,7 @@ void QRootCanvas::mouseReleaseEvent( QMouseEvent *e )
             break;
          case Qt::RightButton :
             // does not work properly on Linux...
-            // ...adding setAttribute(Qt::WA_PaintOnScreen, true) 
+            // ...adding setAttribute(Qt::WA_PaintOnScreen, true)
             // seems to cure the problem
             fCanvas->HandleInput(kButton3Up, e->x(), e->y());
             break;
@@ -141,44 +141,45 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
 
    QVBoxLayout *l = new QVBoxLayout(this);
    l->addWidget(canvas = new QRootCanvas(this));
-   l->addWidget(b = new QPushButton("&Draw Histogram", this));
-   connect(b, SIGNAL(clicked()), this, SLOT(clicked1()));
+//   canvas = new QRootCanvas(this);
+//   l->addWidget(b = new QPushButton("&Draw Histogram", this));
+//   connect(b, SIGNAL(clicked()), this, SLOT(clicked1()));
    fRootTimer = new QTimer(this);
 //   QObject::connect( fRootTimer, SIGNAL(timeout()), this, SLOT(handle_root_events()) );
 //   fRootTimer->start(20);
 }
 
 //______________________________________________________________________________
-void QMainCanvas::clicked1()
-{
-   // Handle the "Draw Histogram" button clicked() event.
+//void QMainCanvas::clicked1()
+//{
+//   // Handle the "Draw Histogram" button clicked() event.
 
-   static TH1F *h1f = 0;
-   new TFormula("form1","abs(sin(x)/x)");
-   TF1 *sqroot = new TF1("sqroot","x*gaus(0) + [3]*form1", 0, 10);
-   sqroot->SetParameters(10, 4, 1, 20);
+//   static TH1F *h1f = 0;
+//   new TFormula("form1","abs(sin(x)/x)");
+//   TF1 *sqroot = new TF1("sqroot","x*gaus(0) + [3]*form1", 0, 10);
+//   sqroot->SetParameters(10, 4, 1, 20);
 
-   // Create a one dimensional histogram (one float per bin)
-   // and fill it following the distribution in function sqroot.
-   canvas->getCanvas()->Clear();
-   canvas->getCanvas()->cd();
-   canvas->getCanvas()->SetBorderMode(0);
-   canvas->getCanvas()->SetFillColor(0);
-   canvas->getCanvas()->SetGrid();
+//   // Create a one dimensional histogram (one float per bin)
+//   // and fill it following the distribution in function sqroot.
+//   canvas->getCanvas()->Clear();
+//   canvas->getCanvas()->cd();
+//   canvas->getCanvas()->SetBorderMode(0);
+//   canvas->getCanvas()->SetFillColor(0);
+//   canvas->getCanvas()->SetGrid();
 
-   static TGraph* test_gr = new TGraph();
-   for (int i = 0; i < 100; ++i) {
-       test_gr->SetPoint(i, i, i*i);
-   }
+//   static TGraph* test_gr = new TGraph();
+//   for (int i = 0; i < 100; ++i) {
+//       test_gr->SetPoint(i, i, i*i);
+//   }
 
-   test_gr->SetFillColor(kViolet + 2);
-   test_gr->SetFillStyle(3001);
-   test_gr->Draw();
+//   test_gr->SetFillColor(kViolet + 2);
+//   test_gr->SetFillStyle(3001);
+//   test_gr->Draw();
 
-   canvas->getCanvas()->Modified();
-   canvas->getCanvas()->Resize();
-   canvas->getCanvas()->Update();
-}
+//   canvas->getCanvas()->Modified();
+//   canvas->getCanvas()->Resize();
+//   canvas->getCanvas()->Update();
+//}
 
 //______________________________________________________________________________
 void QMainCanvas::handle_root_events()
@@ -194,7 +195,7 @@ void QMainCanvas::changeEvent(QEvent * e)
       QWindowStateChangeEvent * event = static_cast< QWindowStateChangeEvent * >( e );
       if (( event->oldState() & Qt::WindowMaximized ) ||
           ( event->oldState() & Qt::WindowMinimized ) ||
-          ( event->oldState() == Qt::WindowNoState && 
+          ( event->oldState() == Qt::WindowNoState &&
             this->windowState() == Qt::WindowMaximized )) {
          if (canvas->getCanvas()) {
             canvas->getCanvas()->Resize();

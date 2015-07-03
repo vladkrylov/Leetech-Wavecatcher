@@ -123,7 +123,7 @@ int Wavecatcher::Start_Acquisition()
 
     AcquisitionRunning = TRUE;
 
-    for(int i=0; i < 2000; i++)
+    for(int i=0; i < 5000; i++)
     {
 
         Prepare_Event();
@@ -149,7 +149,7 @@ int Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        if (eltim.elapsed() > 20) {
+        if (eltim.elapsed() > 500) {
             eltim.restart();
             emit DataReceived(CurrentEvent.ChannelData);
         }

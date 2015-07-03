@@ -8,7 +8,6 @@
 class QPaintEvent;
 class QResizeEvent;
 class QMouseEvent;
-class QPushButton;
 class QTimer;
 class TCanvas;
 
@@ -42,13 +41,11 @@ public:
 
 
 public slots:
-   void clicked1();
    void handle_root_events();
    void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
 protected:
    QRootCanvas    *canvas;
-   QPushButton    *b;
    QTimer         *fRootTimer;
 };
 
