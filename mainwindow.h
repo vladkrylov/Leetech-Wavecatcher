@@ -20,7 +20,7 @@ public:
     void Test();
 
     // GUI elements
-    QPushButton* updateButton;
+    QPushButton* startButton;
     QPushButton* stopButton;
 
 public slots:

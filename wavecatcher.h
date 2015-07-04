@@ -65,12 +65,17 @@ public:
 signals:
     void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);
+    void AcquisitionFinished();
 
 public slots:
     void Stop_run();
     void Start_Acquisition();
+    void onStart();
+    void onStop();
+    void Process();
 
 private:
+//    bool run;
     void Init_LocalVariables();
     void Start_run();
     void Prepare_Event();

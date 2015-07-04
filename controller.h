@@ -24,6 +24,7 @@ private:
 signals:
 
 public slots:
+    void Test();
 };
 
 #endif // CONTROLLER_H

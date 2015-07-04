@@ -10,11 +10,6 @@ Controller::Controller(QObject *parent) : QObject(parent)
     wc = new Wavecatcher();
     wc->moveToThread(WCthread);
 
-    connect(WCthread, SIGNAL(started()), wc, SLOT(Start_Acquisition()));
-
-    WCthread->start();
-
-
     view = new MainWindow();
     view->resize(view->sizeHint());
     view->setWindowTitle("Qt Example - Canvas");
@@ -22,8 +17,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
     view->show();
 
     ConnectSignalSlots();
-
-//    wc->start();
+    WCthread->start();
 }
 
 Controller::~Controller()
@@ -34,7 +28,19 @@ Controller::~Controller()
 
 void Controller::ConnectSignalSlots()
 {
+    connect(WCthread, SIGNAL(started()), wc, SLOT(Process()));
+    connect(WCthread, SIGNAL(finished()), WCthread, SLOT(deleteLater()));
+    connect(wc, SIGNAL(AcquisitionFinished()), WCthread, SLOT(quit()));
+    connect(wc, SIGNAL(AcquisitionFinished()), this, SLOT(Test()));
+
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), view, SLOT(DrawWaveforms(const WAVECAT64CH_ChannelDataStruct*)));
 
-    connect(view->stopButton, SIGNAL(clicked(bool)), wc, SLOT(Stop_run()));
+    connect(view->stopButton, SIGNAL(clicked(bool)), wc, SLOT(onStop()), Qt::DirectConnection);
+    connect(view->startButton, SIGNAL(clicked(bool)), wc, SLOT(onStart()), Qt::DirectConnection);
 }
+
+void Controller::Test()
+{
+    qDebug() << "thread finished";
+}
+

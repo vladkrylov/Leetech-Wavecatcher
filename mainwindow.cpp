@@ -26,7 +26,7 @@ void MainWindow::ConstructGUI()
 {
     QVBoxLayout* mainLayout = new QVBoxLayout(cw);
     mainLayout->addWidget(scope);
-    mainLayout->addWidget(updateButton = new QPushButton("Update", this));
+    mainLayout->addWidget(startButton = new QPushButton("Start", this));
     mainLayout->addWidget(stopButton = new QPushButton("Stop", this));
 
     cw->setLayout(mainLayout);

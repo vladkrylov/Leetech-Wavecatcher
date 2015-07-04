@@ -52,8 +52,6 @@ Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
         Init_LocalVariables();
         WAVECAT64CH_StopRun();
     }
-
-    connect(this, SIGNAL(started()), this, SLOT(Start_Acquisition()));
 }
 
 Wavecatcher::~Wavecatcher()
@@ -162,7 +160,6 @@ void Wavecatcher::Start_Acquisition()
         if(errCode < 0)
             break;
 
-//        StopAcquisition = TRUE;
         if(StopAcquisition == TRUE)
             break;
     }
@@ -170,6 +167,7 @@ void Wavecatcher::Start_Acquisition()
     Stop_run();
 
     AcquisitionRunning = FALSE;
+    emit AcquisitionFinished();
 }
 
 int Wavecatcher::Open(int* handle)
@@ -177,21 +175,39 @@ int Wavecatcher::Open(int* handle)
     return WAVECAT64CH_OpenDevice(handle);
 }
 
- void Wavecatcher::Start_run()
+void Wavecatcher::Start_run()
 {
     WAVECAT64CH_AllocateEventStructure(&CurrentEvent);
     WAVECAT64CH_StartRun();
 }
 
- void Wavecatcher::Stop_run()
+void Wavecatcher::Stop_run()
 {
     WAVECAT64CH_StopRun();
     WAVECAT64CH_FreeEventStructure(&CurrentEvent);
 }
 
- void Wavecatcher::Prepare_Event()
+void Wavecatcher::Prepare_Event()
 {
     WAVECAT64CH_PrepareEvent();
 }
 
+void Wavecatcher::onStart()
+{
+    StopAcquisition = FALSE;
+    qDebug() << "StopAcquisition = FALSE";
+}
 
+void Wavecatcher::onStop()
+{
+    StopAcquisition = TRUE;
+    qDebug() << "StopAcquisition = TRUE";
+}
+
+void Wavecatcher::Process()
+{
+    while(1) {
+        if (!StopAcquisition)
+            Start_Acquisition();
+    }
+}
