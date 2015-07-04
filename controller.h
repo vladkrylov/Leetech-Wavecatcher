@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 
 #include <QObject>
+#include <QThread>
 
 class Wavecatcher;
 class MainWindow;
@@ -14,6 +15,7 @@ public:
     ~Controller();
 
 private:
+    QThread* WCthread;
     Wavecatcher* wc;
     MainWindow* view;
 

@@ -24,6 +24,7 @@
 #include <userint.h>
 
 #include <QObject>
+#include <QThread>
 
 #define TRUE 1
 #define FALSE 0
@@ -52,15 +53,23 @@ typedef enum {
 
 }TriggerType_t;
 
-class Wavecatcher : public QObject
+class Wavecatcher : public QThread
 {
     Q_OBJECT
 public:
-    explicit Wavecatcher(QObject *parent = 0);
+    explicit Wavecatcher(QThread *parent = 0);
     ~Wavecatcher();
 
     int Open(int* handle);
-    int Start_Acquisition ();
+
+signals:
+    void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
+    void PlotData(const WAVECAT64CH_ChannelDataStruct*);
+
+public slots:
+    void PlotEnable(bool a);
+    void Stop_run();
+    void Start_Acquisition();
 
 private:
     void Init_LocalVariables();
@@ -137,13 +146,6 @@ private:
     //---------------------------------------------------------
     bool plot;
 
-signals:
-    void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
-    void PlotData(const WAVECAT64CH_ChannelDataStruct*);
-
-public slots:
-    void PlotEnable(bool a);
-    void Stop_run();
 };
 
 #endif // WAVECATCHER_H

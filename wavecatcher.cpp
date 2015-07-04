@@ -15,7 +15,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 
-Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
+Wavecatcher::Wavecatcher(QThread *parent) : QThread(parent)
 //    ChannelInCoincidenceForRateHandle {
 //                 PANEL_RATE_COINCBOX0_0,PANEL_RATE_COINCBOX0_1,PANEL_RATE_COINCBOX0_2,PANEL_RATE_COINCBOX0_3,
 //                 PANEL_RATE_COINCBOX1_0,PANEL_RATE_COINCBOX1_1,PANEL_RATE_COINCBOX1_2,PANEL_RATE_COINCBOX1_3,
@@ -52,6 +52,8 @@ Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
         Init_LocalVariables();
         WAVECAT64CH_StopRun();
     }
+
+    connect(this, SIGNAL(started()), this, SLOT(Start_Acquisition()));
 }
 
 Wavecatcher::~Wavecatcher()
@@ -105,7 +107,7 @@ void Wavecatcher::Init_LocalVariables()
     ChannelForRatePlot = -1; // All channels
 }
 
-int Wavecatcher::Start_Acquisition()
+void Wavecatcher::Start_Acquisition()
 {
 //int channel, channelToPlot;
 //double yOffset;
@@ -124,7 +126,7 @@ int Wavecatcher::Start_Acquisition()
     AcquisitionRunning = TRUE;
 
     for(;;)
-//    for(int i=0; i < 4000; i++)
+//    for(int i=0; i < 5000; i++)
     {
 
         Prepare_Event();
@@ -150,9 +152,10 @@ int Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        if (eltim.elapsed() > 1000) {
+        if (eltim.elapsed() > 25) {
             eltim.restart();
             emit DataReceived(CurrentEvent.ChannelData);
+//            msleep(100);
         }
 //        if (plot) {
 //            emit PlotData(CurrentEvent.ChannelData);
@@ -170,8 +173,6 @@ int Wavecatcher::Start_Acquisition()
     Stop_run();
 
     AcquisitionRunning = FALSE;
-
-    return 0;
 }
 
 int Wavecatcher::Open(int* handle)

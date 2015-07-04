@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include <stdlib.h>
 
@@ -144,7 +145,7 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
    canvas->getCanvas()->SetGrid();
    canvas->getCanvas()->Pad()->SetGrid();
 
-   float h = 900.;
+   float h = 150.;
    for (int ch = 0; ch < N_CHANNELS; ++ch) {
        gr[ch] = new TGraph();
        gr[ch]->SetLineColor(ch+1);
@@ -158,35 +159,36 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
    gr[0]->SetMinimum(0);
 }
 
-//______________________________________________________________________________
-void QMainCanvas::handle_root_events()
-{
-   //call the inner loop of ROOT
-   gSystem->ProcessEvents();
-}
+//void QMainCanvas::handle_root_events()
+//{
+//   //call the inner loop of ROOT
+//   gSystem->ProcessEvents();
+//}
 
-//______________________________________________________________________________
 void QMainCanvas::changeEvent(QEvent * e)
 {
-   if (e->type() == QEvent ::WindowStateChange) {
-      QWindowStateChangeEvent * event = static_cast< QWindowStateChangeEvent * >( e );
-      if (( event->oldState() & Qt::WindowMaximized ) ||
-          ( event->oldState() & Qt::WindowMinimized ) ||
-          ( event->oldState() == Qt::WindowNoState &&
-            this->windowState() == Qt::WindowMaximized )) {
-         if (canvas->getCanvas()) {
-            canvas->getCanvas()->Resize();
-            canvas->getCanvas()->Update();
-         }
-      }
-   }
+//   if (e->type() == QEvent ::WindowStateChange) {
+//      QWindowStateChangeEvent * event = static_cast< QWindowStateChangeEvent * >( e );
+//      if (( event->oldState() & Qt::WindowMaximized ) ||
+//          ( event->oldState() & Qt::WindowMinimized ) ||
+//          ( event->oldState() == Qt::WindowNoState &&
+//            this->windowState() == Qt::WindowMaximized )) {
+//         if (canvas->getCanvas()) {
+//            canvas->getCanvas()->Resize();
+//            canvas->getCanvas()->Update();
+//         }
+//      }
+//   }
 }
 
 void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 {
+    QElapsedTimer eltim;
+    eltim.start();
+
     int size = ChannelData[0].WaveformDataSize;
 
-//    canvas->getCanvas()->Clear();
+    canvas->getCanvas()->Clear();
 //    canvas->getCanvas()->cd();
 //    canvas->getCanvas()->SetBorderMode(0);
 //    canvas->getCanvas()->SetFillColor(0);
@@ -208,13 +210,15 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
     gr[0]->GetYaxis()->SetLabelSize(0);
 
     gr[0]->Draw();
-//    for (int i = 0; i < N_CHANNELS; ++i) {
-//        gr[i]->Draw("same");
-//    }
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        gr[i]->Draw("same");
+    }
 
     canvas->getCanvas()->Modified();
     canvas->getCanvas()->Resize();
     canvas->getCanvas()->Update();
+
+    qDebug() << eltim.elapsed();
 }
 
 

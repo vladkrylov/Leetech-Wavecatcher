@@ -44,7 +44,7 @@ public:
 
 
 public slots:
-   void handle_root_events();
+//   void handle_root_events();
    void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
 private:

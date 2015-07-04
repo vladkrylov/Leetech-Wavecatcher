@@ -6,8 +6,12 @@
 
 Controller::Controller(QObject *parent) : QObject(parent)
 {
-    wc = new Wavecatcher(this);
-    view = new MainWindow(0);
+    WCthread = new QThread(this);
+    wc = new Wavecatcher();
+    wc->moveToThread(WCthread);
+    WCthread->start();
+
+    view = new MainWindow();
     view->resize(view->sizeHint());
     view->setWindowTitle("Qt Example - Canvas");
     view->setGeometry(100, 100, 700, 500);
@@ -15,11 +19,12 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
     ConnectSignalSlots();
 
-    wc->Start_Acquisition();
+    wc->start();
 }
 
 Controller::~Controller()
 {
+    delete wc;
     delete view;
 }
 
