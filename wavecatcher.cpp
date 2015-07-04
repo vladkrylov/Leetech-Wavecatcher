@@ -167,7 +167,7 @@ void Wavecatcher::Start_Acquisition()
     Stop_run();
 
     AcquisitionRunning = FALSE;
-    emit AcquisitionFinished();
+//    emit AcquisitionFinished();
 }
 
 int Wavecatcher::Open(int* handle)

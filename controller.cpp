@@ -22,6 +22,9 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
 Controller::~Controller()
 {
+    WCthread->quit();
+//    WCthread->wait();
+
     delete wc;
     delete view;
 }
@@ -30,8 +33,8 @@ void Controller::ConnectSignalSlots()
 {
     connect(WCthread, SIGNAL(started()), wc, SLOT(Process()));
     connect(WCthread, SIGNAL(finished()), WCthread, SLOT(deleteLater()));
-    connect(wc, SIGNAL(AcquisitionFinished()), WCthread, SLOT(quit()));
-    connect(wc, SIGNAL(AcquisitionFinished()), this, SLOT(Test()));
+//    connect(wc, SIGNAL(AcquisitionFinished()), WCthread, SLOT(quit()));
+    connect(WCthread, SIGNAL(finished()), this, SLOT(Test()));
 
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), view, SLOT(DrawWaveforms(const WAVECAT64CH_ChannelDataStruct*)));
 

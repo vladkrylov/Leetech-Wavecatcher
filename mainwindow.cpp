@@ -30,8 +30,24 @@ void MainWindow::ConstructGUI()
     mainLayout->addWidget(stopButton = new QPushButton("Stop", this));
 
     cw->setLayout(mainLayout);
+
+    CreateActions();
+    ConstructMenus();
 }
 
+void MainWindow::ConstructMenus()
+{
+    channelsMenu = menuBar()->addMenu(tr("&Channels"));
+    for (int i = 0; i < N_WCHANNELS; ++i) {
+        channelsMenu->addAction(channelsAction[i]);
+    }
+}
 
-
-
+void MainWindow::CreateActions()
+{
+    for (int i = 0; i < N_WCHANNELS; ++i) {
+        channelsAction[i] = new QAction(QString("Channel ") + QString::number(i+1), this);
+        channelsAction[i]->setCheckable(true);
+        channelsAction[i]->setChecked(true);
+    }
+}
