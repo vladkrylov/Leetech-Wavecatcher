@@ -53,11 +53,11 @@ typedef enum {
 
 }TriggerType_t;
 
-class Wavecatcher : public QThread
+class Wavecatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit Wavecatcher(QThread *parent = 0);
+    explicit Wavecatcher(QObject *parent = 0);
     ~Wavecatcher();
 
     int Open(int* handle);
@@ -67,7 +67,6 @@ signals:
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);
 
 public slots:
-    void PlotEnable(bool a);
     void Stop_run();
     void Start_Acquisition();
 
@@ -142,10 +141,6 @@ private:
     float PlotIntervalForRateStripchart;
     float ChannelHitRate[MAX_NB_OF_CHANNELS];
     Boolean RateRunStopRequested;
-
-    //---------------------------------------------------------
-    bool plot;
-
 };
 
 #endif // WAVECATCHER_H

@@ -9,7 +9,11 @@ Controller::Controller(QObject *parent) : QObject(parent)
     WCthread = new QThread(this);
     wc = new Wavecatcher();
     wc->moveToThread(WCthread);
+
+    connect(WCthread, SIGNAL(started()), wc, SLOT(Start_Acquisition()));
+
     WCthread->start();
+
 
     view = new MainWindow();
     view->resize(view->sizeHint());
@@ -19,7 +23,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
     ConnectSignalSlots();
 
-    wc->start();
+//    wc->start();
 }
 
 Controller::~Controller()
@@ -32,6 +36,5 @@ void Controller::ConnectSignalSlots()
 {
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), view, SLOT(DrawWaveforms(const WAVECAT64CH_ChannelDataStruct*)));
 
-    connect(view->updateButton, SIGNAL(clicked(bool)), wc, SLOT(PlotEnable(bool)));
     connect(view->stopButton, SIGNAL(clicked(bool)), wc, SLOT(Stop_run()));
 }

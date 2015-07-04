@@ -15,7 +15,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 
-Wavecatcher::Wavecatcher(QThread *parent) : QThread(parent)
+Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
 //    ChannelInCoincidenceForRateHandle {
 //                 PANEL_RATE_COINCBOX0_0,PANEL_RATE_COINCBOX0_1,PANEL_RATE_COINCBOX0_2,PANEL_RATE_COINCBOX0_3,
 //                 PANEL_RATE_COINCBOX1_0,PANEL_RATE_COINCBOX1_1,PANEL_RATE_COINCBOX1_2,PANEL_RATE_COINCBOX1_3,
@@ -58,6 +58,8 @@ Wavecatcher::Wavecatcher(QThread *parent) : QThread(parent)
 
 Wavecatcher::~Wavecatcher()
 {
+    Stop_run();
+    WAVECAT64CH_CloseDevice();
 }
 
 void Wavecatcher::Init_LocalVariables()
@@ -155,12 +157,7 @@ void Wavecatcher::Start_Acquisition()
         if (eltim.elapsed() > 25) {
             eltim.restart();
             emit DataReceived(CurrentEvent.ChannelData);
-//            msleep(100);
         }
-//        if (plot) {
-//            emit PlotData(CurrentEvent.ChannelData);
-//            plot = false;
-//        }
 
         if(errCode < 0)
             break;
@@ -183,14 +180,12 @@ int Wavecatcher::Open(int* handle)
  void Wavecatcher::Start_run()
 {
     WAVECAT64CH_AllocateEventStructure(&CurrentEvent);
-
     WAVECAT64CH_StartRun();
 }
 
  void Wavecatcher::Stop_run()
 {
     WAVECAT64CH_StopRun();
-
     WAVECAT64CH_FreeEventStructure(&CurrentEvent);
 }
 
@@ -199,9 +194,4 @@ int Wavecatcher::Open(int* handle)
     WAVECAT64CH_PrepareEvent();
 }
 
- void Wavecatcher::PlotEnable(bool a)
- {
-     plot = true;
-     qDebug() << "!";
- }
 
