@@ -21,6 +21,13 @@ public:
     void Test();
 
     // GUI elements
+    QGroupBox* runModeBox;
+    QRadioButton* continuousMode;
+    QRadioButton* finiteMode;
+
+    QLabel* eventsRequiredLabel;
+    QLineEdit* eventsRequiredBox;
+
     QPushButton* startButton;
     QPushButton* stopButton;
     QCheckBox* saveWfLabel;

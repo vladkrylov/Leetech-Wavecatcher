@@ -32,6 +32,19 @@ void MainWindow::ConstructGUI()
     QVBoxLayout* rightPanelLayout = new QVBoxLayout();
     mainLayout->addLayout(rightPanelLayout);
 
+    rightPanelLayout->addWidget(runModeBox = new QGroupBox(tr("Run Mode"), this));
+    QVBoxLayout* runModeLayout = new QVBoxLayout(runModeBox);
+    runModeLayout->addWidget(continuousMode = new QRadioButton(tr("Continuous mode"), runModeBox));
+    continuousMode->setChecked(true);
+    runModeLayout->addWidget(finiteMode = new QRadioButton(tr("Finite mode"), runModeBox));
+
+    QHBoxLayout* eventsRequiredLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(eventsRequiredLayout);
+    eventsRequiredLayout->addWidget(eventsRequiredLabel = new QLabel(tr("Events required:"), this));
+    eventsRequiredLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    eventsRequiredLayout->addWidget(eventsRequiredBox = new QLineEdit(this));
+    eventsRequiredBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
     QHBoxLayout* startStopLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(startStopLayout);
     startStopLayout->addWidget(startButton = new QPushButton(tr("Start"), this));
