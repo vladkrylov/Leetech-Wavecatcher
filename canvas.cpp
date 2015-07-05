@@ -145,7 +145,7 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
    canvas->getCanvas()->SetGrid();
    canvas->getCanvas()->Pad()->SetGrid();
 
-   float h = 150.;
+   h = 150.;
    for (int ch = 0; ch < N_CHANNELS; ++ch) {
        gr[ch] = new TGraph();
        gr[ch]->SetLineColor(ch+1);
@@ -154,9 +154,6 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
        enabled[ch] = true;
    }
    gr[0]->SetLineColor(46);
-
-   gr[0]->SetMaximum(h);
-   gr[0]->SetMinimum(0);
 }
 
 //void QMainCanvas::handle_root_events()
@@ -196,22 +193,37 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
 
 //    gr[0]->Set(size);
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        for (int i = 0; i < size; ++i) {
-            gr[ch]->SetPoint(i, i, ChannelData[ch].WaveformData[i] + baselines[ch]);
+        if (enabled[ch]) {
+            for (int i = 0; i < size; ++i) {
+                gr[ch]->SetPoint(i, i, ChannelData[ch].WaveformData[i] + baselines[ch]);
+            }
         }
     }
 
-    gr[0]->SetFillColor(kViolet + 2);
-    gr[0]->SetFillStyle(3001);
-    gr[0]->GetXaxis()->SetLimits(0, size);
-    gr[0]->GetXaxis()->SetLabelSize(0);
-    gr[0]->GetXaxis()->SetNdivisions(10, false);
-    gr[0]->GetYaxis()->SetNdivisions(9, false);
-    gr[0]->GetYaxis()->SetLabelSize(0);
 
-    gr[0]->Draw();
-    for (int i = 0; i < N_CHANNELS; ++i) {
-        gr[i]->Draw("same");
+
+    // draw first enabled channel
+    int drawn = -1;
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        if (enabled[ch]) {
+            gr[ch]->SetFillColor(kViolet + 2);
+            gr[ch]->SetFillStyle(3001);
+            gr[ch]->GetXaxis()->SetLimits(0, size);
+            gr[ch]->GetXaxis()->SetLabelSize(0);
+            gr[ch]->GetXaxis()->SetNdivisions(10, false);
+            gr[ch]->GetYaxis()->SetNdivisions(9, false);
+            gr[ch]->GetYaxis()->SetLabelSize(0);
+            gr[ch]->SetMaximum(h);
+            gr[ch]->SetMinimum(0);
+
+            gr[ch]->Draw();
+            drawn = ch;
+            break;
+        }
+    }
+    // draw other channels
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        if ((enabled[ch]) && (drawn != ch)) gr[ch]->Draw("same");
     }
 
     canvas->getCanvas()->Modified();

@@ -3,11 +3,10 @@
 
 #include <windows.h>
 #include "WaveCat64ch_Lib.h"
+#include "canvas.h"
 
 #include <QMainWindow>
 #include <QtWidgets>
-
-const int N_WCHANNELS = 8;
 
 class QMainCanvas;
 
@@ -24,13 +23,31 @@ public:
     // GUI elements
     QPushButton* startButton;
     QPushButton* stopButton;
+    QCheckBox* saveWfLabel;
+    QPushButton* saveOptButton;
+
+    QFrame* horizontalLine1;
+
+    QLabel* selectChannelLabel;
+    QComboBox* selectChannelBox;
+
+    QLabel* channelScaleLabel;
+    QComboBox* channelScaleBox;
+    QLabel* channelScaleLabel2;
+    QPushButton* channelScaleApplyToAllButton;
+    QLabel* channelOffsetLabel;
+    QSpinBox* channelOffsetBox;
+    QLabel* channelOffsetLabel2;
+
+    QSpacerItem* rightPanelSpacer;
 
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
 
+private slots:
+    void ChannedEnDis();
+
 signals:
-    ChannelEnabled(short chId);
-    ChannelDisabled(short chId);
 
 private:
     QWidget* cw;
@@ -39,12 +56,11 @@ private:
     QMenu* channelsMenu;
 
     // actions
-    QAction* channelsAction[N_WCHANNELS];
+    QAction* channelsAction[N_CHANNELS];
 
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();
-
 };
 
 #endif // MAINWINDOW_H
