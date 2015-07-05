@@ -75,6 +75,7 @@ private slots:
     void SetScale();
     void SetScales();
     void SetOffset(int val);
+    void DisplayChannelSettings();
 
 signals:
 
@@ -91,6 +92,8 @@ private:
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();
+
+    void SetScales(float val);
 };
 
 #endif // MAINWINDOW_H

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(cw);
 
     ConstructGUI();
+    SetScales(channelScaleBox->currentData().toFloat());
 
     // this must be called at last
     ConnectSignalsSlots();
@@ -27,6 +28,9 @@ void MainWindow::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 
 void MainWindow::ConstructGUI()
 {
+    CreateActions();
+    ConstructMenus();
+
     QHBoxLayout* mainLayout = new QHBoxLayout(cw);
     mainLayout->addWidget(scope);
     cw->setLayout(mainLayout);
@@ -129,13 +133,12 @@ void MainWindow::ConstructGUI()
 
 
     rightPanelLayout->addSpacerItem(rightPanelSpacer = new QSpacerItem(20, 2000, QSizePolicy::Maximum, QSizePolicy::Expanding));
-
-    CreateActions();
-    ConstructMenus();
 }
 
 void MainWindow::ConnectSignalsSlots()
 {
+    connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()));
+
     connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
 
@@ -174,7 +177,6 @@ void MainWindow::SetScale()
 {
     int channel = selectChannelBox->currentData().toInt();
     float val = channelScaleBox->currentData().toFloat();
-//    qDebug() << "Scale of ch." << channel+1 << " was changed to " << val << "mV/div";
     if ((channel >=0) && (channel < N_CHANNELS))
         scope->scales[channel] = val;
 }
@@ -182,16 +184,37 @@ void MainWindow::SetScale()
 void MainWindow::SetScales()
 {
     float val = channelScaleBox->currentData().toFloat();
+    SetScales(val);
+}
+
+void MainWindow::SetScales(float val)
+{
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         scope->scales[ch] = val;
-//        qDebug() << "Scale of ch." << ch+1 << " was changed to " << val << "mV/div";
     }
 }
 
 void MainWindow::SetOffset(int val)
 {
     int channel = selectChannelBox->currentData().toInt();
-//    qDebug() << "Scale of ch." << channel+1 << " was changed to " << val << "mV/div";
     if ((channel >=0) && (channel < N_CHANNELS))
         scope->baselines[channel] = val;
+}
+
+void MainWindow::DisplayChannelSettings()
+{
+    int index;
+    int channel = selectChannelBox->currentData().toInt();
+    if ((channel >=0) && (channel < N_CHANNELS)) {
+        // set scale
+        index = channelScaleBox->findData(scope->scales[channel]);
+        if (index >= 0)
+            channelScaleBox->setCurrentIndex(index);
+        else
+            qDebug() << "Channel " << channel << " has wrong scale";
+
+        // set offset
+        channelOffsetBox->setValue((int)scope->baselines[channel]);
+
+    }
 }
