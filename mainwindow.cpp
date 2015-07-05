@@ -68,6 +68,18 @@ void MainWindow::ConstructGUI()
     }
     rightPanelLayout->addWidget(channelScaleApplyToAllButton = new QPushButton(tr("Apply scale to all channels"), this));
 
+    QHBoxLayout* channelHScaleLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(channelHScaleLayout);
+    channelHScaleLayout->addWidget(channelHScaleLabel = new QLabel(tr("Time Scale:"), this));
+    channelHScaleLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    channelHScaleLayout->addWidget(channelHScaleBox = new QComboBox(this));
+    channelHScaleLayout->addWidget(channelHScaleLabel2 = new QLabel(tr("ns"), this));
+    channelScaleLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    int Hscales[9] = {500, 200, 100, 50, 20, 10, 5, 2, 1}; // ns
+    for (int i = 0; i < 9; ++i) {
+        channelHScaleBox->addItem(QString::number(Hscales[i]), Hscales[i]);
+    }
+
 
     QHBoxLayout* channelOffsetLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(channelOffsetLayout);
@@ -76,6 +88,28 @@ void MainWindow::ConstructGUI()
     channelOffsetLayout->addWidget(channelOffsetBox = new QSpinBox(this));
     channelOffsetLayout->addWidget(channelOffsetLabel2 = new QLabel(tr("mV"), this));
     channelOffsetLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    rightPanelLayout->addWidget(horizontalLine2 = new QFrame(this));
+    horizontalLine2->setFrameShape(QFrame::HLine);
+
+    rightPanelLayout->addWidget(typeOfTriggerBox = new QGroupBox(tr("Type of trigger:"), this));
+    QVBoxLayout* typeOfTriggerLayout = new QVBoxLayout(typeOfTriggerBox);
+
+    typeOfTriggerLayout->addWidget(triggerType1 = new QRadioButton(tr("Software"), typeOfTriggerBox));
+    typeOfTriggerLayout->addWidget(triggerType2 = new QRadioButton(tr("Normal"), typeOfTriggerBox));
+    typeOfTriggerLayout->addWidget(triggerType3 = new QRadioButton(tr("Internal"), typeOfTriggerBox));
+    triggerType3->setChecked(true);
+    typeOfTriggerLayout->addWidget(triggerType4 = new QRadioButton(tr("External"), typeOfTriggerBox));
+    typeOfTriggerLayout->addWidget(triggerType5 = new QRadioButton(tr("Coincidence"), typeOfTriggerBox));
+
+    QHBoxLayout* triggerLevelLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(triggerLevelLayout);
+    triggerLevelLayout->addWidget(triggerLevelLabel = new QLabel(tr("Trigger level:"), this));
+    triggerLevelLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    triggerLevelLayout->addWidget(triggerLevelBox = new QSpinBox(this));
+    triggerLevelLayout->addWidget(triggerLevelLabel2 = new QLabel(tr("mV"), this));
+    triggerLevelLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
 
 
     rightPanelLayout->addSpacerItem(rightPanelSpacer = new QSpacerItem(20, 2000, QSizePolicy::Maximum, QSizePolicy::Expanding));

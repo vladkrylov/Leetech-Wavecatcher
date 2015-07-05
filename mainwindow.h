@@ -39,6 +39,24 @@ public:
     QSpinBox* channelOffsetBox;
     QLabel* channelOffsetLabel2;
 
+    QLabel* channelHScaleLabel;
+    QComboBox* channelHScaleBox;
+    QLabel* channelHScaleLabel2;
+
+    QFrame* horizontalLine2;
+
+    QLabel* triggerMenuLabel;
+    QGroupBox* typeOfTriggerBox;
+    QRadioButton* triggerType1;
+    QRadioButton* triggerType2;
+    QRadioButton* triggerType3;
+    QRadioButton* triggerType4;
+    QRadioButton* triggerType5;
+
+    QLabel* triggerLevelLabel;
+    QSpinBox* triggerLevelBox;
+    QLabel* triggerLevelLabel2;
+
     QSpacerItem* rightPanelSpacer;
 
 public slots:
