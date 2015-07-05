@@ -3,7 +3,7 @@
 #define EXAMPLE_H
 
 #include <QWidget>
-#include "WaveCat64ch_Lib.h"
+#include "wavecatcher.h"
 
 class QPaintEvent;
 class QResizeEvent;
@@ -11,8 +11,6 @@ class QMouseEvent;
 class QTimer;
 class TCanvas;
 class TGraph;
-
-const int N_CHANNELS = 8;
 
 class QRootCanvas : public QWidget
 {

@@ -21,6 +21,7 @@
 #include <TTimer.h>
 
 #include "canvas.h"
+#include "wavecatcher.h"
 
 //------------------------------------------------------------------------------
 
