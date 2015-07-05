@@ -151,7 +151,6 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
        gr[ch] = new TGraph();
        gr[ch]->SetLineColor(ch+1);
 
-       baselines[ch] = (ch+1) * 100 / (N_CHANNELS + 1); // in %
        scales[ch] = 1;
        enabled[ch] = true;
    }
@@ -233,7 +232,7 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
     canvas->getCanvas()->Resize();
     canvas->getCanvas()->Update();
 
-    qDebug() << eltim.elapsed();
+//    qDebug() << eltim.elapsed();
 }
 
 

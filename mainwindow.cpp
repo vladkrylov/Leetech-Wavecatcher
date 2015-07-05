@@ -12,9 +12,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ConstructGUI();
     SetScales(channelScaleBox->currentData().toFloat());
+    SetOffsets();
 
     // this must be called at last
     ConnectSignalsSlots();
+    // display actual channels settings
+    emit selectChannelBox->currentIndexChanged(selectChannelBox->currentIndex());
 }
 
 MainWindow::~MainWindow()
@@ -116,20 +119,33 @@ void MainWindow::ConstructGUI()
     QVBoxLayout* typeOfTriggerLayout = new QVBoxLayout(typeOfTriggerBox);
 
     typeOfTriggerLayout->addWidget(triggerType1 = new QRadioButton(tr("Software"), typeOfTriggerBox));
+    triggerType1->setEnabled(false);
     typeOfTriggerLayout->addWidget(triggerType2 = new QRadioButton(tr("Normal"), typeOfTriggerBox));
     typeOfTriggerLayout->addWidget(triggerType3 = new QRadioButton(tr("Internal"), typeOfTriggerBox));
     triggerType3->setChecked(true);
     typeOfTriggerLayout->addWidget(triggerType4 = new QRadioButton(tr("External"), typeOfTriggerBox));
+    triggerType4->setEnabled(false);
     typeOfTriggerLayout->addWidget(triggerType5 = new QRadioButton(tr("Coincidence"), typeOfTriggerBox));
+    triggerType5->setEnabled(false);
+
+    QHBoxLayout* triggerSourceLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(triggerSourceLayout);
+    triggerSourceLayout->addWidget(triggerSourceLabel = new QLabel(tr("Trigger source:"), this));
+    triggerSourceLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    triggerSourceLayout->addWidget(triggerSourceBox = new QComboBox(this));
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        triggerSourceBox->addItem("Ch " + QString::number(ch+1), ch);
+    }
 
     QHBoxLayout* triggerLevelLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(triggerLevelLayout);
     triggerLevelLayout->addWidget(triggerLevelLabel = new QLabel(tr("Trigger level:"), this));
     triggerLevelLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    triggerLevelLayout->addWidget(triggerLevelBox = new QSpinBox(this));
-    triggerLevelLayout->addWidget(triggerLevelLabel2 = new QLabel(tr("mV"), this));
+    triggerLevelLayout->addWidget(triggerLevelBox = new QLineEdit(this));
+    triggerLevelBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    triggerLevelLayout->addWidget(triggerLevelLabel2 = new QLabel(tr("V"), this));
     triggerLevelLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
+    triggerLevelLayout->addWidget(setTriggerLevelButton = new QPushButton(tr("Set"), this));
 
 
     rightPanelLayout->addSpacerItem(rightPanelSpacer = new QSpacerItem(20, 2000, QSizePolicy::Maximum, QSizePolicy::Expanding));
@@ -138,11 +154,18 @@ void MainWindow::ConstructGUI()
 void MainWindow::ConnectSignalsSlots()
 {
     connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()));
-
     connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
-
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
+
+    connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
+    connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
+    connect(triggerType3, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
+    connect(triggerType4, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
+    connect(triggerType5, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
+
+    connect(triggerSourceBox, SIGNAL(currentIndexChanged(int)), this, SIGNAL(TriggerSourceChanged(int)));
+    connect(setTriggerLevelButton, SIGNAL(clicked(bool)), this, SLOT(TriggerLevelChanged()));
 }
 
 void MainWindow::ConstructMenus()
@@ -201,6 +224,13 @@ void MainWindow::SetOffset(int val)
         scope->baselines[channel] = val;
 }
 
+void MainWindow::SetOffsets()
+{
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        scope->baselines[ch] = (ch+1) * 100 / (N_CHANNELS + 1); // in %
+    }
+}
+
 void MainWindow::DisplayChannelSettings()
 {
     int index;
@@ -217,4 +247,20 @@ void MainWindow::DisplayChannelSettings()
         channelOffsetBox->setValue((int)scope->baselines[channel]);
 
     }
+}
+
+void MainWindow::TriggerTypeChanged()
+{
+    if (triggerType1->isChecked()) emit SetTriggerType(0);
+    else if (triggerType2->isChecked()) emit SetTriggerType(1);
+    else if (triggerType3->isChecked()) emit SetTriggerType(2);
+    else if (triggerType4->isChecked()) emit SetTriggerType(3);
+    else if (triggerType5->isChecked()) emit SetTriggerType(4);
+}
+
+void MainWindow::TriggerLevelChanged()
+{
+    int channel = triggerSourceBox->currentData().toInt();
+    float threshold = triggerLevelBox->text().toFloat();
+    emit TriggerLevelChanged(channel, threshold);
 }

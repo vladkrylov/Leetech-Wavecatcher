@@ -75,6 +75,9 @@ public slots:
     void onStart();
     void onStop();
     void Process();
+    void SetTriggerType(int trigger);
+    void SetTriggerSource(int channel);
+    void SetTriggerThreshold(int channel, float thr);
 
 private:
 //    bool run;
@@ -89,14 +92,6 @@ private:
     void Set_ChannelSelectionList(int panelHandle, int controlName);
     void Set_FourChannelGroupSelectionList(int panelHandle, int controlName);
     int  Set_Color(int channel);
-
-    int ThreadID;
-//    void *ThreadData;
-    int RunRateThreadID;
-//    void *RunRateThreadData;
-
-    int MainPanelHandle;
-    int RateStatisticsPanelHandle;
 
     int DeviceHandle;
     int EventNumber;

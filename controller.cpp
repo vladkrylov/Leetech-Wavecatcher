@@ -13,7 +13,7 @@ Controller::Controller(QObject *parent) : QObject(parent)
     view = new MainWindow();
     view->resize(view->sizeHint());
     view->setWindowTitle("Qt Example - Canvas");
-    view->setGeometry(100, 100, 700, 500);
+    view->setGeometry(100, 100, 1700, 900);
     view->show();
 
     ConnectSignalSlots();
@@ -40,6 +40,10 @@ void Controller::ConnectSignalSlots()
 
     connect(view->stopButton, SIGNAL(clicked(bool)), wc, SLOT(onStop()), Qt::DirectConnection);
     connect(view->startButton, SIGNAL(clicked(bool)), wc, SLOT(onStart()), Qt::DirectConnection);
+
+    connect(view, SIGNAL(SetTriggerType(int)), wc, SLOT(SetTriggerType(int)), Qt::DirectConnection);
+    connect(view, SIGNAL(TriggerSourceChanged(int)), wc, SLOT(SetTriggerSource(int)), Qt::DirectConnection);
+    connect(view, SIGNAL(TriggerLevelChanged(int,float)), wc, SLOT(SetTriggerThreshold(int,float)), Qt::DirectConnection);
 }
 
 void Controller::Test()

@@ -60,9 +60,13 @@ public:
     QRadioButton* triggerType4;
     QRadioButton* triggerType5;
 
+    QLabel* triggerSourceLabel;
+    QComboBox* triggerSourceBox;
+
     QLabel* triggerLevelLabel;
-    QSpinBox* triggerLevelBox;
+    QLineEdit* triggerLevelBox;
     QLabel* triggerLevelLabel2;
+    QPushButton* setTriggerLevelButton;
 
     QSpacerItem* rightPanelSpacer;
 
@@ -76,8 +80,13 @@ private slots:
     void SetScales();
     void SetOffset(int val);
     void DisplayChannelSettings();
+    void TriggerTypeChanged();
+    void TriggerLevelChanged();
 
 signals:
+    void SetTriggerType(int);
+    void TriggerSourceChanged(int channel);
+    void TriggerLevelChanged(int channel, float threshold);
 
 private:
     QWidget* cw;
@@ -94,6 +103,7 @@ private:
     void ConstructMenus();
 
     void SetScales(float val);
+    void SetOffsets();
 };
 
 #endif // MAINWINDOW_H

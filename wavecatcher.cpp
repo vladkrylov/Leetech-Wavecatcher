@@ -195,13 +195,11 @@ void Wavecatcher::Prepare_Event()
 void Wavecatcher::onStart()
 {
     StopAcquisition = FALSE;
-    qDebug() << "StopAcquisition = FALSE";
 }
 
 void Wavecatcher::onStop()
 {
     StopAcquisition = TRUE;
-    qDebug() << "StopAcquisition = TRUE";
 }
 
 void Wavecatcher::Process()
@@ -210,4 +208,19 @@ void Wavecatcher::Process()
         if (!StopAcquisition)
             Start_Acquisition();
     }
+}
+
+void Wavecatcher::SetTriggerType(int trigger)
+{
+    qDebug() << WAVECAT64CH_SetTriggerMode(TriggerType = (WAVECAT64CH_TriggerType)trigger);
+}
+
+void Wavecatcher::SetTriggerSource(int channel)
+{
+    qDebug() << WAVECAT64CH_SetTriggerSourceState(WAVECAT64CH_FRONT_CHANNEL, channel, ChannelTriggerEnable[channel] = WAVECAT64CH_STATE_ON);
+}
+
+void Wavecatcher::SetTriggerThreshold(int channel, float thr)
+{
+    qDebug() << WAVECAT64CH_SetTriggerThreshold(WAVECAT64CH_FRONT_CHANNEL, channel, TriggerThreshold[channel] = thr);
 }
