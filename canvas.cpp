@@ -146,12 +146,13 @@ QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
    canvas->getCanvas()->SetGrid();
    canvas->getCanvas()->Pad()->SetGrid();
 
-   h = 150.;
+   h = 900;
    for (int ch = 0; ch < N_CHANNELS; ++ch) {
        gr[ch] = new TGraph();
        gr[ch]->SetLineColor(ch+1);
 
-       baselines[ch] = (ch+1) * h / (N_CHANNELS + 1);
+       baselines[ch] = (ch+1) * 100 / (N_CHANNELS + 1); // in %
+       scales[ch] = 1;
        enabled[ch] = true;
    }
    gr[0]->SetLineColor(46);
@@ -196,7 +197,8 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         if (enabled[ch]) {
             for (int i = 0; i < size; ++i) {
-                gr[ch]->SetPoint(i, i, ChannelData[ch].WaveformData[i] + baselines[ch]);
+                gr[ch]->SetPoint(i, i,
+                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/9 /scales[ch] * ChannelData[ch].WaveformData[i] + baselines[ch] * h / 100.);
             }
         }
     }

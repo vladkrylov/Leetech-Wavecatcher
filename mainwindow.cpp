@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(cw);
 
     ConstructGUI();
+
+    // this must be called at last
+    ConnectSignalsSlots();
 }
 
 MainWindow::~MainWindow()
@@ -99,7 +102,7 @@ void MainWindow::ConstructGUI()
     channelOffsetLayout->addWidget(channelOffsetLabel = new QLabel(tr("Offset:"), this));
     channelOffsetLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     channelOffsetLayout->addWidget(channelOffsetBox = new QSpinBox(this));
-    channelOffsetLayout->addWidget(channelOffsetLabel2 = new QLabel(tr("mV"), this));
+    channelOffsetLayout->addWidget(channelOffsetLabel2 = new QLabel(tr("%"), this));
     channelOffsetLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
     rightPanelLayout->addWidget(horizontalLine2 = new QFrame(this));
@@ -131,6 +134,14 @@ void MainWindow::ConstructGUI()
     ConstructMenus();
 }
 
+void MainWindow::ConnectSignalsSlots()
+{
+    connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
+    connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
+
+    connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
+}
+
 void MainWindow::ConstructMenus()
 {
     channelsMenu = menuBar()->addMenu(tr("&Channels"));
@@ -157,4 +168,30 @@ void MainWindow::ChannedEnDis()
         scope->enabled[ch] = channelsAction[ch]->isChecked();
         qDebug() << "Channel " << ch+1 << (channelsAction[ch]->isChecked() ? "enabled" : "disabled");
     }
+}
+
+void MainWindow::SetScale()
+{
+    int channel = selectChannelBox->currentData().toInt();
+    float val = channelScaleBox->currentData().toFloat();
+//    qDebug() << "Scale of ch." << channel+1 << " was changed to " << val << "mV/div";
+    if ((channel >=0) && (channel < N_CHANNELS))
+        scope->scales[channel] = val;
+}
+
+void MainWindow::SetScales()
+{
+    float val = channelScaleBox->currentData().toFloat();
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        scope->scales[ch] = val;
+//        qDebug() << "Scale of ch." << ch+1 << " was changed to " << val << "mV/div";
+    }
+}
+
+void MainWindow::SetOffset(int val)
+{
+    int channel = selectChannelBox->currentData().toInt();
+//    qDebug() << "Scale of ch." << channel+1 << " was changed to " << val << "mV/div";
+    if ((channel >=0) && (channel < N_CHANNELS))
+        scope->baselines[channel] = val;
 }

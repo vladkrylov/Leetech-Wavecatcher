@@ -41,15 +41,15 @@ public:
    virtual void changeEvent(QEvent * e);
 
    bool enabled[N_CHANNELS];
+   float baselines[N_CHANNELS];
+   float scales[N_CHANNELS];
 
 
 public slots:
 //   void handle_root_events();
    void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
-//   void SetChannelsStatus(bool chStatus[N_CHANNELS]);
 
 private:
-   float baselines[N_CHANNELS];
    TGraph* gr[N_CHANNELS];
 
    float h;

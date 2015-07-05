@@ -72,6 +72,10 @@ public slots:
 private slots:
     void ChannedEnDis();
 
+    void SetScale();
+    void SetScales();
+    void SetOffset(int val);
+
 signals:
 
 private:
@@ -83,6 +87,7 @@ private:
     // actions
     QAction* channelsAction[N_CHANNELS];
 
+    void ConnectSignalsSlots();
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();
