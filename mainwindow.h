@@ -75,18 +75,21 @@ public slots:
 
 private slots:
     void ChannedEnDis();
-
+    void OnStartButtonClicked();
+    void OnStopButtonClicked();
     void SetScale();
     void SetScales();
     void SetOffset(int val);
     void DisplayChannelSettings();
     void TriggerTypeChanged();
     void TriggerLevelChanged();
+    void RunModeChanged();
 
 signals:
     void SetTriggerType(int);
     void TriggerSourceChanged(int channel);
     void TriggerLevelChanged(int channel, float threshold);
+    void SetRunMode(int runmode, int param);
 
 private:
     QWidget* cw;
@@ -98,6 +101,7 @@ private:
     QAction* channelsAction[N_CHANNELS];
 
     void ConnectSignalsSlots();
+    void SetValidastors();
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();

@@ -55,6 +55,11 @@ typedef enum {
 
 }TriggerType_t;
 
+typedef enum {
+    RUN_MODE_CONTINUOUS,
+    RUN_MODE_FINITE
+}RunMode_t;
+
 class Wavecatcher : public QObject
 {
     Q_OBJECT
@@ -78,6 +83,7 @@ public slots:
     void SetTriggerType(int trigger);
     void SetTriggerSource(int channel);
     void SetTriggerThreshold(int channel, float thr);
+    void SetRunMode(int m, int param);
 
 private:
 //    bool run;
@@ -92,6 +98,9 @@ private:
     void Set_ChannelSelectionList(int panelHandle, int controlName);
     void Set_FourChannelGroupSelectionList(int panelHandle, int controlName);
     int  Set_Color(int channel);
+
+    RunMode_t runMode;
+    int numberOfAquisitions;
 
     int DeviceHandle;
     int EventNumber;

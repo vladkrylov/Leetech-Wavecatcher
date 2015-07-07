@@ -11,10 +11,11 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(cw);
 
     ConstructGUI();
+    SetValidastors();
     SetScales(channelScaleBox->currentData().toFloat());
     SetOffsets();
 
-    // this must be called at last
+    // this must be called at pre-last
     ConnectSignalsSlots();
     // display actual channels settings
     emit selectChannelBox->currentIndexChanged(selectChannelBox->currentIndex());
@@ -75,7 +76,7 @@ void MainWindow::ConstructGUI()
     selectChannelLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     selectChannelLayout->addWidget(selectChannelBox = new QComboBox(this));
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        selectChannelBox->addItem(QString::number(ch+1), ch);
+        selectChannelBox->addItem(QString::number(ch), ch);
     }
 
     QHBoxLayout* channelScaleLayout = new QHBoxLayout();
@@ -134,7 +135,7 @@ void MainWindow::ConstructGUI()
     triggerSourceLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     triggerSourceLayout->addWidget(triggerSourceBox = new QComboBox(this));
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        triggerSourceBox->addItem("Ch " + QString::number(ch+1), ch);
+        triggerSourceBox->addItem("Ch " + QString::number(ch), ch);
     }
 
     QHBoxLayout* triggerLevelLayout = new QHBoxLayout();
@@ -143,7 +144,7 @@ void MainWindow::ConstructGUI()
     triggerLevelLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     triggerLevelLayout->addWidget(triggerLevelBox = new QLineEdit(this));
     triggerLevelBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    triggerLevelLayout->addWidget(triggerLevelLabel2 = new QLabel(tr("V"), this));
+    triggerLevelLayout->addWidget(triggerLevelLabel2 = new QLabel(tr("mV"), this));
     triggerLevelLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     triggerLevelLayout->addWidget(setTriggerLevelButton = new QPushButton(tr("Set"), this));
 
@@ -153,7 +154,13 @@ void MainWindow::ConstructGUI()
 
 void MainWindow::ConnectSignalsSlots()
 {
-    connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()));
+    connect(continuousMode, SIGNAL(clicked(bool)), this, SLOT(RunModeChanged()));
+    connect(finiteMode, SIGNAL(clicked(bool)), this, SLOT(RunModeChanged()));
+
+    connect(startButton, SIGNAL(clicked(bool)), this, SLOT(OnStartButtonClicked()));
+    connect(stopButton, SIGNAL(clicked(bool)), this, SLOT(OnStopButtonClicked()));
+
+    connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()()));
     connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
@@ -166,6 +173,15 @@ void MainWindow::ConnectSignalsSlots()
 
     connect(triggerSourceBox, SIGNAL(currentIndexChanged(int)), this, SIGNAL(TriggerSourceChanged(int)));
     connect(setTriggerLevelButton, SIGNAL(clicked(bool)), this, SLOT(TriggerLevelChanged()));
+}
+
+void MainWindow::SetValidastors()
+{
+    QIntValidator* nrunsValidator = new QIntValidator(0, 1e9, this);
+    eventsRequiredBox->setValidator(nrunsValidator);
+
+    QIntValidator* triggerLevelValidator = new QIntValidator(-1250, 1250, this);
+    triggerLevelBox->setValidator(triggerLevelValidator);
 }
 
 void MainWindow::ConstructMenus()
@@ -235,7 +251,7 @@ void MainWindow::DisplayChannelSettings()
 {
     int index;
     int channel = selectChannelBox->currentData().toInt();
-    if ((channel >=0) && (channel < N_CHANNELS)) {
+    if ((channel >= 0) && (channel < N_CHANNELS)) {
         // set scale
         index = channelScaleBox->findData(scope->scales[channel]);
         if (index >= 0)
@@ -261,6 +277,33 @@ void MainWindow::TriggerTypeChanged()
 void MainWindow::TriggerLevelChanged()
 {
     int channel = triggerSourceBox->currentData().toInt();
-    float threshold = triggerLevelBox->text().toFloat();
+    float threshold = triggerLevelBox->text().toFloat() / 1000.;
     emit TriggerLevelChanged(channel, threshold);
 }
+
+void MainWindow::RunModeChanged()
+{
+    if (continuousMode->isChecked()) {
+        emit SetRunMode(0, 0);
+    }
+    else if (finiteMode->isChecked()) {
+        emit SetRunMode(1, eventsRequiredBox->text().toInt());
+    }
+}
+
+void MainWindow::OnStartButtonClicked()
+{
+    triggerSourceBox->setEnabled(false);
+    typeOfTriggerBox->setEnabled(false);
+    triggerLevelBox->setEnabled(false);
+    setTriggerLevelButton->setEnabled(false);
+}
+
+void MainWindow::OnStopButtonClicked()
+{
+    triggerSourceBox->setEnabled(true);
+    typeOfTriggerBox->setEnabled(true);
+    triggerLevelBox->setEnabled(true);
+    setTriggerLevelButton->setEnabled(true);
+}
+

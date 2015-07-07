@@ -27,6 +27,7 @@ Wavecatcher::Wavecatcher(QObject *parent) : QObject(parent)
 {
     DeviceHandle = -1;
     StopAcquisition = TRUE;
+    numberOfAquisitions = 0;
 
     NbOfChannels = 0;
 
@@ -217,6 +218,9 @@ void Wavecatcher::SetTriggerType(int trigger)
 
 void Wavecatcher::SetTriggerSource(int channel)
 {
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        WAVECAT64CH_SetTriggerSourceState(WAVECAT64CH_FRONT_CHANNEL, ch, ChannelTriggerEnable[ch] = WAVECAT64CH_STATE_OFF);
+    }
     qDebug() << WAVECAT64CH_SetTriggerSourceState(WAVECAT64CH_FRONT_CHANNEL, channel, ChannelTriggerEnable[channel] = WAVECAT64CH_STATE_ON);
 }
 
@@ -224,3 +228,13 @@ void Wavecatcher::SetTriggerThreshold(int channel, float thr)
 {
     qDebug() << WAVECAT64CH_SetTriggerThreshold(WAVECAT64CH_FRONT_CHANNEL, channel, TriggerThreshold[channel] = thr);
 }
+
+void Wavecatcher::SetRunMode(int m, int param)
+{
+    runMode = (RunMode_t)m;
+    if (runMode = RUN_MODE_FINITE) {
+        numberOfAquisitions = param;
+    }
+}
+
+

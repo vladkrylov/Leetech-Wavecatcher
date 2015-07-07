@@ -212,7 +212,7 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
             gr[ch]->SetFillStyle(3001);
             gr[ch]->GetXaxis()->SetLimits(0, size);
             gr[ch]->GetXaxis()->SetLabelSize(0);
-            gr[ch]->GetXaxis()->SetNdivisions(10, false);
+            gr[ch]->GetXaxis()->SetNdivisions(16, false);
             gr[ch]->GetYaxis()->SetNdivisions(9, false);
             gr[ch]->GetYaxis()->SetLabelSize(0);
             gr[ch]->SetMaximum(h);
