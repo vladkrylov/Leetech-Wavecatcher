@@ -160,7 +160,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(startButton, SIGNAL(clicked(bool)), this, SLOT(OnStartButtonClicked()));
     connect(stopButton, SIGNAL(clicked(bool)), this, SLOT(OnStopButtonClicked()));
 
-    connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()()));
+    connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()));
     connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
@@ -261,7 +261,6 @@ void MainWindow::DisplayChannelSettings()
 
         // set offset
         channelOffsetBox->setValue((int)scope->baselines[channel]);
-
     }
 }
 
