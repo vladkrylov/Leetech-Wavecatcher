@@ -40,6 +40,9 @@ public:
    virtual ~QMainCanvas() {}
    virtual void changeEvent(QEvent * e);
 
+   const int N_HORIZONTAL_DIVISIONS;
+   const int N_VERTICAL_DIVISIONS;
+
    bool enabled[N_CHANNELS];
    float baselines[N_CHANNELS];
    float scales[N_CHANNELS];

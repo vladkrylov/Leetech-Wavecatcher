@@ -11,14 +11,21 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(cw);
 
     ConstructGUI();
+
     SetValidastors();
     SetScales(channelScaleBox->currentData().toFloat());
     SetOffsets();
-
-    // this must be called at pre-last
     ConnectSignalsSlots();
+
     // display actual channels settings
     emit selectChannelBox->currentIndexChanged(selectChannelBox->currentIndex());
+
+    disableWhenAcquisitionRunning << triggerSourceBox
+                                  << typeOfTriggerBox
+                                  << triggerLevelBox
+                                  << setTriggerLevelButton
+                                  << channelHScaleBox
+                                  ;
 }
 
 MainWindow::~MainWindow()
@@ -86,9 +93,9 @@ void MainWindow::ConstructGUI()
     channelScaleLayout->addWidget(channelScaleBox = new QComboBox(this));
     channelScaleLayout->addWidget(channelScaleLabel2 = new QLabel(tr("mV/div"), this));
     channelScaleLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    int scales[9] = {500, 200, 100, 50, 20, 10, 5, 2, 1}; // mV
+    int Vscales[9] = {500, 200, 100, 50, 20, 10, 5, 2, 1}; // mV
     for (int i = 0; i < 9; ++i) {
-        channelScaleBox->addItem(QString::number(scales[i]), scales[i]);
+        channelScaleBox->addItem(QString::number(Vscales[i]), Vscales[i]);
     }
     rightPanelLayout->addWidget(channelScaleApplyToAllButton = new QPushButton(tr("Apply scale to all channels"), this));
 
@@ -99,8 +106,8 @@ void MainWindow::ConstructGUI()
     channelHScaleLayout->addWidget(channelHScaleBox = new QComboBox(this));
     channelHScaleLayout->addWidget(channelHScaleLabel2 = new QLabel(tr("ns"), this));
     channelScaleLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    int Hscales[9] = {500, 200, 100, 50, 20, 10, 5, 2, 1}; // ns
-    for (int i = 0; i < 9; ++i) {
+    int Hscales[8] = {20, 30, 40, 50, 60, 80, 120, 160}; // ns
+    for (int i = 0; i < 8; ++i) {
         channelHScaleBox->addItem(QString::number(Hscales[i]), Hscales[i]);
     }
 
@@ -161,7 +168,8 @@ void MainWindow::ConnectSignalsSlots()
     connect(stopButton, SIGNAL(clicked(bool)), this, SLOT(OnStopButtonClicked()));
 
     connect(selectChannelBox, SIGNAL(currentIndexChanged(int)), this, SLOT(DisplayChannelSettings()));
-    connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetScale()));
+    connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetVerticalScale()));
+    connect(channelHScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetHorizontalScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
 
@@ -212,7 +220,7 @@ void MainWindow::ChannedEnDis()
     }
 }
 
-void MainWindow::SetScale()
+void MainWindow::SetVerticalScale()
 {
     int channel = selectChannelBox->currentData().toInt();
     float val = channelScaleBox->currentData().toFloat();
@@ -220,9 +228,16 @@ void MainWindow::SetScale()
         scope->scales[channel] = val;
 }
 
+void MainWindow::SetHorizontalScale()
+{
+    int val = channelHScaleBox->currentData().toInt();
+    emit HorizontalScaleChanged(val * scope->N_HORIZONTAL_DIVISIONS);
+}
+
 void MainWindow::SetScales()
 {
     float val = channelScaleBox->currentData().toFloat();
+
     SetScales(val);
 }
 
@@ -292,17 +307,29 @@ void MainWindow::RunModeChanged()
 
 void MainWindow::OnStartButtonClicked()
 {
-    triggerSourceBox->setEnabled(false);
-    typeOfTriggerBox->setEnabled(false);
-    triggerLevelBox->setEnabled(false);
-    setTriggerLevelButton->setEnabled(false);
+    foreach (QWidget* w, disableWhenAcquisitionRunning) {
+        w->setEnabled(false);
+    }
+    // set run mode and number of acquisitions
+    int runMode = 0;
+    int nacq = 0;
+    if (continuousMode->isChecked()) runMode = 0;
+    else if (finiteMode->isChecked()) {
+        runMode = 1;
+        nacq = eventsRequiredBox->text().toInt();
+    }
+    emit RunStarted(runMode, nacq);
 }
 
 void MainWindow::OnStopButtonClicked()
 {
-    triggerSourceBox->setEnabled(true);
-    typeOfTriggerBox->setEnabled(true);
-    triggerLevelBox->setEnabled(true);
-    setTriggerLevelButton->setEnabled(true);
+    foreach (QWidget* w, disableWhenAcquisitionRunning) {
+        w->setEnabled(true);
+    }
+    emit RunStopped();
 }
+
+
+
+
 

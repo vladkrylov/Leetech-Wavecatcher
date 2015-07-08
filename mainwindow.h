@@ -77,7 +77,8 @@ private slots:
     void ChannedEnDis();
     void OnStartButtonClicked();
     void OnStopButtonClicked();
-    void SetScale();
+    void SetVerticalScale();
+    void SetHorizontalScale();
     void SetScales();
     void SetOffset(int val);
     void DisplayChannelSettings();
@@ -86,16 +87,21 @@ private slots:
     void RunModeChanged();
 
 signals:
+    void RunStarted(int runMode, int numberOfAcquisitions);
+    void RunStopped();
     void SetTriggerType(int);
     void TriggerSourceChanged(int channel);
     void TriggerLevelChanged(int channel, float threshold);
     void SetRunMode(int runmode, int param);
+    void HorizontalScaleChanged(int timelengthOfWaveform);
 
 private:
     QWidget* cw;
     QMainCanvas* scope;
 
     QMenu* channelsMenu;
+
+    QList<QWidget*> disableWhenAcquisitionRunning;
 
     // actions
     QAction* channelsAction[N_CHANNELS];

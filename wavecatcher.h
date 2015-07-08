@@ -70,16 +70,17 @@ public:
     int Open(int* handle);
 
 signals:
-    void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
+    void PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);
     void AcquisitionFinished();
 
 public slots:
     void Stop_run();
     void Start_Acquisition();
-    void onStart();
+    void onStart(int mode, int N);
     void onStop();
     void Process();
+    void SetSamplingFrequency(int timelengthOfWaveform);
     void SetTriggerType(int trigger);
     void SetTriggerSource(int channel);
     void SetTriggerThreshold(int channel, float thr);

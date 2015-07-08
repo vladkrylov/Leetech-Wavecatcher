@@ -137,7 +137,9 @@ void QRootCanvas::paintEvent( QPaintEvent * )
 //------------------------------------------------------------------------------
 
 //______________________________________________________________________________
-QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
+QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent),
+    N_HORIZONTAL_DIVISIONS(16),
+    N_VERTICAL_DIVISIONS(9)
 {
    // QMainCanvas constructor.
 
@@ -197,7 +199,7 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
         if (enabled[ch]) {
             for (int i = 0; i < size; ++i) {
                 gr[ch]->SetPoint(i, i,
-                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/9 /scales[ch] * ChannelData[ch].WaveformData[i] + baselines[ch] * h / 100.);
+                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/N_VERTICAL_DIVISIONS /scales[ch] * ChannelData[ch].WaveformData[i] + baselines[ch] * h / 100.);
             }
         }
     }
@@ -212,8 +214,8 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
             gr[ch]->SetFillStyle(3001);
             gr[ch]->GetXaxis()->SetLimits(0, size);
             gr[ch]->GetXaxis()->SetLabelSize(0);
-            gr[ch]->GetXaxis()->SetNdivisions(16, false);
-            gr[ch]->GetYaxis()->SetNdivisions(9, false);
+            gr[ch]->GetXaxis()->SetNdivisions(N_HORIZONTAL_DIVISIONS, false);
+            gr[ch]->GetYaxis()->SetNdivisions(N_VERTICAL_DIVISIONS, false);
             gr[ch]->GetYaxis()->SetLabelSize(0);
             gr[ch]->SetMaximum(h);
             gr[ch]->SetMinimum(0);

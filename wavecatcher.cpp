@@ -112,7 +112,7 @@ void Wavecatcher::Start_Acquisition()
 {
 //int channel, channelToPlot;
 //double yOffset;
-    int channel = 0;
+//    int channel = 0;
     WAVECAT64CH_ErrCode errCode;
 
     QElapsedTimer eltim;
@@ -127,7 +127,6 @@ void Wavecatcher::Start_Acquisition()
     AcquisitionRunning = TRUE;
 
     for(;;)
-//    for(int i=0; i < 5000; i++)
     {
 
         Prepare_Event();
@@ -153,9 +152,10 @@ void Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
+        qDebug() << CurrentEvent.ChannelData[0].Peak;
         if (eltim.elapsed() > 25) {
             eltim.restart();
-            emit DataReceived(CurrentEvent.ChannelData);
+            emit PlotDataReceived(CurrentEvent.ChannelData);
         }
 
         if(errCode < 0)
@@ -163,12 +163,15 @@ void Wavecatcher::Start_Acquisition()
 
         if(StopAcquisition == TRUE)
             break;
+
+        if (EventNumber >= numberOfAquisitions)
+            break;
     }
 
     Stop_run();
 
     AcquisitionRunning = FALSE;
-//    emit AcquisitionFinished();
+    StopAcquisition = TRUE;
 }
 
 int Wavecatcher::Open(int* handle)
@@ -193,8 +196,13 @@ void Wavecatcher::Prepare_Event()
     WAVECAT64CH_PrepareEvent();
 }
 
-void Wavecatcher::onStart()
+void Wavecatcher::onStart(int mode, int N)
 {
+    runMode = (RunMode_t)mode;
+    numberOfAquisitions = N;
+    if (runMode == RUN_MODE_CONTINUOUS) {
+        numberOfAquisitions = 1e9;
+    }
     StopAcquisition = FALSE;
 }
 
@@ -237,4 +245,33 @@ void Wavecatcher::SetRunMode(int m, int param)
     }
 }
 
-
+void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
+{
+    WAVECAT64CH_SamplingFrequencyType f;
+    switch(timelengthOfWaveform) { // in nanoseconds
+    case 320:
+        f = WAVECAT64CH_3_2GHZ;
+        break;
+    case 480:
+        f = WAVECAT64CH_2_13GHZ;
+        break;
+    case 640:
+        f = WAVECAT64CH_1_6GHZ;
+        break;
+    case 960:
+        f = WAVECAT64CH_1_07GHZ;
+        break;
+    case 1280:
+        f = WAVECAT64CH_800MHZ;
+        break;
+    case 1920:
+        f = WAVECAT64CH_533MHZ;
+        break;
+    case 2560:
+        f = WAVECAT64CH_400MHZ;
+        break;
+    default:
+        break;
+    }
+    qDebug() << WAVECAT64CH_SetSamplingFrequency(f);
+}
