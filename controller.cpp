@@ -1,6 +1,7 @@
 #include "controller.h"
 #include "wavecatcher.h"
 #include "mainwindow.h"
+#include "waveformssaver.h"
 
 #include <QDebug>
 
@@ -16,6 +17,10 @@ Controller::Controller(QObject *parent) : QObject(parent)
     view->setGeometry(100, 100, 1700, 900);
     view->show();
 
+    saverThread = new QThread(this);
+    saver = new WaveformsSaver();
+    saver->moveToThread(saverThread);
+
     ConnectSignalSlots();
     WCthread->start();
 }
@@ -25,6 +30,7 @@ Controller::~Controller()
 //    WCthread->quit();
 //    WCthread->wait();
 
+    delete saver;
     delete wc;
     delete view;
 }
@@ -45,6 +51,8 @@ void Controller::ConnectSignalSlots()
     connect(view, SIGNAL(SetTriggerType(int)), wc, SLOT(SetTriggerType(int)), Qt::DirectConnection);
     connect(view, SIGNAL(TriggerSourceChanged(int)), wc, SLOT(SetTriggerSource(int)), Qt::DirectConnection);
     connect(view, SIGNAL(TriggerLevelChanged(int,float)), wc, SLOT(SetTriggerThreshold(int,float)), Qt::DirectConnection);
+
+    connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
 }
 
 void Controller::Test()

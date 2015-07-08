@@ -6,6 +6,7 @@
 
 class Wavecatcher;
 class MainWindow;
+class WaveformsSaver;
 
 class Controller : public QObject
 {
@@ -16,8 +17,11 @@ public:
 
 private:
     QThread* WCthread;
+    QThread* saverThread;
+
     Wavecatcher* wc;
     MainWindow* view;
+    WaveformsSaver* saver;
 
     void ConnectSignalSlots();
 

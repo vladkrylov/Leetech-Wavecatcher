@@ -152,7 +152,8 @@ void Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        qDebug() << CurrentEvent.ChannelData[0].Peak;
+        emit DataReceived(CurrentEvent.ChannelData);
+//        qDebug() << CurrentEvent.ChannelData[0].Peak;
         if (eltim.elapsed() > 25) {
             eltim.restart();
             emit PlotDataReceived(CurrentEvent.ChannelData);
