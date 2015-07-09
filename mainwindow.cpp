@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << setTriggerLevelButton
                                   << channelHScaleBox
                                   << eventsRequiredBox
+                                  << horizontalPositionBox
+                                  << horizontalPositionButton
                                   ;
 }
 
@@ -184,6 +186,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelHScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetHorizontalScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
+    connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
 
     connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
     connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
@@ -370,3 +373,8 @@ void MainWindow::UpdateInterfaceOnStopRun()
     eventsRequiredBox->setText(l.first());
 }
 
+void MainWindow::OnPositionButtonClicked()
+{
+    unsigned char pos = horizontalPositionBox->text().toShort();
+    emit HorizonatalPositionChanged(pos);
+}

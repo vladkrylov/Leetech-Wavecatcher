@@ -43,19 +43,17 @@ void Controller::ConnectSignalSlots()
 
     connect(wc, SIGNAL(EventsAcquired(int)), view, SLOT(DisplayEventsAcquired(int)));
     connect(wc, SIGNAL(PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*)), view, SLOT(DrawWaveforms(const WAVECAT64CH_ChannelDataStruct*)));
+    connect(wc, SIGNAL(FiniteRunFinished()), view, SLOT(UpdateInterfaceOnStopRun()));
 
     connect(view, SIGNAL(RunStopped()), wc, SLOT(onStop()), Qt::DirectConnection);
     connect(view, SIGNAL(RunStarted(int,int)), wc, SLOT(onStart(int,int)), Qt::DirectConnection);
-
     connect(view, SIGNAL(HorizontalScaleChanged(int)), wc, SLOT(SetSamplingFrequency(int)), Qt::DirectConnection);
-
     connect(view, SIGNAL(SetTriggerType(int)), wc, SLOT(SetTriggerType(int)), Qt::DirectConnection);
     connect(view, SIGNAL(TriggerSourceChanged(int)), wc, SLOT(SetTriggerSource(int)), Qt::DirectConnection);
     connect(view, SIGNAL(TriggerLevelChanged(int,float)), wc, SLOT(SetTriggerThreshold(int,float)), Qt::DirectConnection);
+    connect(view, SIGNAL(HorizonatalPositionChanged(unsigned char)), wc, SLOT(SetTriggerDelay(unsigned char)), Qt::DirectConnection);
 
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
-
-    connect(wc, SIGNAL(FiniteRunFinished()), view, SLOT(UpdateInterfaceOnStopRun()));
 }
 
 void Controller::Test()
