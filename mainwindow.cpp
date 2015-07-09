@@ -202,6 +202,9 @@ void MainWindow::SetValidastors()
 
     QIntValidator* triggerLevelValidator = new QIntValidator(-1250, 1250, this);
     triggerLevelBox->setValidator(triggerLevelValidator);
+
+    QIntValidator* horizontalPositionValidator = new QIntValidator(0, 255, this);
+    horizontalPositionBox->setValidator(horizontalPositionValidator);
 }
 
 void MainWindow::ConstructMenus()
@@ -342,9 +345,7 @@ void MainWindow::OnStartButtonClicked()
 
 void MainWindow::OnStopButtonClicked()
 {
-    foreach (QWidget* w, disableWhenAcquisitionRunning) {
-        w->setEnabled(true);
-    }
+    UpdateInterfaceOnStopRun();
     emit RunStopped();
 }
 
@@ -360,5 +361,12 @@ void MainWindow::DisplayEventsAcquired(int nEvents)
     }
 }
 
-
+void MainWindow::UpdateInterfaceOnStopRun()
+{
+    foreach (QWidget* w, disableWhenAcquisitionRunning) {
+        w->setEnabled(true);
+    }
+    QStringList l = eventsRequiredBox->text().split("/");
+    eventsRequiredBox->setText(l.first());
+}
 

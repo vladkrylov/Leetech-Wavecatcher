@@ -174,6 +174,8 @@ void Wavecatcher::Start_Acquisition()
 
     AcquisitionRunning = FALSE;
     StopAcquisition = TRUE;
+
+    if (runMode == RUN_MODE_FINITE) emit FiniteRunFinished();
 }
 
 int Wavecatcher::Open(int* handle)

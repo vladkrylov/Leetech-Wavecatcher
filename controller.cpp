@@ -54,6 +54,8 @@ void Controller::ConnectSignalSlots()
     connect(view, SIGNAL(TriggerLevelChanged(int,float)), wc, SLOT(SetTriggerThreshold(int,float)), Qt::DirectConnection);
 
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
+
+    connect(wc, SIGNAL(FiniteRunFinished()), view, SLOT(UpdateInterfaceOnStopRun()));
 }
 
 void Controller::Test()

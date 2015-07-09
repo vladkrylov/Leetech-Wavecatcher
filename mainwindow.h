@@ -78,11 +78,12 @@ public:
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
     void DisplayEventsAcquired(int nEvents);
-    void OnStopButtonClicked();
+    void UpdateInterfaceOnStopRun();
 
 private slots:
     void ChannedEnDis();
     void OnStartButtonClicked();
+    void OnStopButtonClicked();
     void SetVerticalScale();
     void SetHorizontalScale();
     void SetScales();
