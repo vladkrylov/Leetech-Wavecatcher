@@ -113,6 +113,16 @@ void MainWindow::ConstructGUI()
         channelHScaleBox->addItem(QString::number(Hscales[i]), Hscales[i]);
     }
 
+    QHBoxLayout* horizontalPositionLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(horizontalPositionLayout);
+    horizontalPositionLayout->addWidget(horizontalPositionLabel = new QLabel(tr("Position:"), this));
+    horizontalPositionLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    horizontalPositionLayout->addWidget(horizontalPositionBox = new QLineEdit(this));
+    horizontalPositionBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    horizontalPositionLayout->addWidget(horizontalPositionLabel2 = new QLabel(tr("?"), this));
+    horizontalPositionLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    horizontalPositionLayout->addWidget(horizontalPositionButton = new QPushButton(tr("Set"), this));
+
 
     QHBoxLayout* channelOffsetLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(channelOffsetLayout);
@@ -206,7 +216,7 @@ void MainWindow::CreateActions()
 {
     bool defaultStatus = true;
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        channelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch+1), this);
+        channelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
         channelsAction[ch]->setCheckable(true);
         channelsAction[ch]->setChecked(defaultStatus);
 

@@ -279,5 +279,8 @@ void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
     qDebug() << WAVECAT64CH_SetSamplingFrequency(f);
 }
 
-
+void Wavecatcher::SetTriggerDelay(unsigned char delay)
+{
+    WAVECAT64CH_SetTriggerDelay(delay);
+}
 

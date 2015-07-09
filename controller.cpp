@@ -61,3 +61,5 @@ void Controller::Test()
     qDebug() << "thread finished";
 }
 
+
+

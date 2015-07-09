@@ -87,6 +87,7 @@ public slots:
     void SetTriggerSource(int channel);
     void SetTriggerThreshold(int channel, float thr);
     void SetRunMode(int m, int param);
+    void SetTriggerDelay(unsigned char delay);
 
 private:
 //    bool run;

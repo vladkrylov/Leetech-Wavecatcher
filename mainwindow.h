@@ -50,6 +50,11 @@ public:
     QComboBox* channelHScaleBox;
     QLabel* channelHScaleLabel2;
 
+    QLabel* horizontalPositionLabel;
+    QLineEdit* horizontalPositionBox;
+    QLabel* horizontalPositionLabel2;
+    QPushButton* horizontalPositionButton;
+
     QFrame* horizontalLine2;
 
     QLabel* triggerMenuLabel;
@@ -73,11 +78,11 @@ public:
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
     void DisplayEventsAcquired(int nEvents);
+    void OnStopButtonClicked();
 
 private slots:
     void ChannedEnDis();
     void OnStartButtonClicked();
-    void OnStopButtonClicked();
     void SetVerticalScale();
     void SetHorizontalScale();
     void SetScales();
