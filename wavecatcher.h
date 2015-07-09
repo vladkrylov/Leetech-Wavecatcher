@@ -75,6 +75,7 @@ signals:
     void PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);
     void AcquisitionFinished();
+    void FiniteRunFinished();
 
 public slots:
     void Stop_run();

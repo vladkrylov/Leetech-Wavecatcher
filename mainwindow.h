@@ -78,11 +78,12 @@ public:
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
     void DisplayEventsAcquired(int nEvents);
-    void OnStopButtonClicked();
+    void UpdateInterfaceOnStopRun();
 
 private slots:
     void ChannedEnDis();
     void OnStartButtonClicked();
+    void OnStopButtonClicked();
     void SetVerticalScale();
     void SetHorizontalScale();
     void SetScales();
@@ -91,6 +92,7 @@ private slots:
     void TriggerTypeChanged();
     void TriggerLevelChanged();
     void RunModeChanged();
+    void OnPositionButtonClicked();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);
@@ -100,6 +102,7 @@ signals:
     void TriggerLevelChanged(int channel, float threshold);
     void SetRunMode(int runmode, int param);
     void HorizontalScaleChanged(int timelengthOfWaveform);
+    void HorizonatalPositionChanged(unsigned char pos);
 
 private:
     QWidget* cw;

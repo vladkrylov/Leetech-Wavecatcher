@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << setTriggerLevelButton
                                   << channelHScaleBox
                                   << eventsRequiredBox
+                                  << horizontalPositionBox
+                                  << horizontalPositionButton
                                   ;
 }
 
@@ -184,6 +186,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelHScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetHorizontalScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
+    connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
 
     connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
     connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
@@ -202,6 +205,9 @@ void MainWindow::SetValidastors()
 
     QIntValidator* triggerLevelValidator = new QIntValidator(-1250, 1250, this);
     triggerLevelBox->setValidator(triggerLevelValidator);
+
+    QIntValidator* horizontalPositionValidator = new QIntValidator(0, 255, this);
+    horizontalPositionBox->setValidator(horizontalPositionValidator);
 }
 
 void MainWindow::ConstructMenus()
@@ -342,9 +348,7 @@ void MainWindow::OnStartButtonClicked()
 
 void MainWindow::OnStopButtonClicked()
 {
-    foreach (QWidget* w, disableWhenAcquisitionRunning) {
-        w->setEnabled(true);
-    }
+    UpdateInterfaceOnStopRun();
     emit RunStopped();
 }
 
@@ -360,5 +364,17 @@ void MainWindow::DisplayEventsAcquired(int nEvents)
     }
 }
 
+void MainWindow::UpdateInterfaceOnStopRun()
+{
+    foreach (QWidget* w, disableWhenAcquisitionRunning) {
+        w->setEnabled(true);
+    }
+    QStringList l = eventsRequiredBox->text().split("/");
+    eventsRequiredBox->setText(l.first());
+}
 
-
+void MainWindow::OnPositionButtonClicked()
+{
+    unsigned char pos = horizontalPositionBox->text().toShort();
+    emit HorizonatalPositionChanged(pos);
+}
