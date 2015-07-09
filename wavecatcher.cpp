@@ -152,7 +152,9 @@ void Wavecatcher::Start_Acquisition()
 
         errCode = WAVECAT64CH_DecodeEvent(&CurrentEvent);
         EventNumber++;
-        qDebug() << CurrentEvent.ChannelData[0].Peak;
+        emit EventsAcquired(EventNumber);
+        emit DataReceived(CurrentEvent.ChannelData);
+//        qDebug() << CurrentEvent.ChannelData[0].Peak;
         if (eltim.elapsed() > 25) {
             eltim.restart();
             emit PlotDataReceived(CurrentEvent.ChannelData);
@@ -255,6 +257,7 @@ void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
     case 480:
         f = WAVECAT64CH_2_13GHZ;
         break;
+
     case 640:
         f = WAVECAT64CH_1_6GHZ;
         break;
@@ -275,3 +278,9 @@ void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
     }
     qDebug() << WAVECAT64CH_SetSamplingFrequency(f);
 }
+
+void Wavecatcher::SetTriggerDelay(unsigned char delay)
+{
+    WAVECAT64CH_SetTriggerDelay(delay);
+}
+

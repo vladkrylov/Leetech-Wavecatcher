@@ -70,6 +70,8 @@ public:
     int Open(int* handle);
 
 signals:
+    void EventsAcquired(int numEvents);
+    void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);
     void AcquisitionFinished();
@@ -85,6 +87,7 @@ public slots:
     void SetTriggerSource(int channel);
     void SetTriggerThreshold(int channel, float thr);
     void SetRunMode(int m, int param);
+    void SetTriggerDelay(unsigned char delay);
 
 private:
 //    bool run;
