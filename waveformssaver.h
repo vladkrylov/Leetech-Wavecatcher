@@ -7,12 +7,14 @@
 #include <QObject>
 #include <QFile>
 #include <QTextStream>
+#include <QString>
 
 class WaveformsSaver : public QObject
 {
     Q_OBJECT
 public:
     explicit WaveformsSaver(QObject *parent = 0);
+    ~WaveformsSaver();
 
 public slots:
     void SaveData(const WAVECAT64CH_ChannelDataStruct *channel);
@@ -20,7 +22,8 @@ public slots:
 signals:
 
 private:
-    QFile* txtOutFile;
+    QString filenameBase;
+    QFile** txtOutFiles;
     QTextStream* out;
 
 };

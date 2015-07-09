@@ -1,4 +1,5 @@
 #include "waveformssaver.h"
+#include "wavecatcher.h"
 
 #include <QDebug>
 #include <QString>
@@ -6,20 +7,40 @@
 
 WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
 {
-    txtOutFile = new QFile("out.txt", this);
-    if (!txtOutFile->open(QIODevice::WriteOnly | QIODevice::Text))
-        qDebug() << "Cannot create a file!";
-    out = new QTextStream(txtOutFile);
+    filenameBase = "Ch_";
 
-//    QElapsedTimer eltim;
-//    eltim.start();
-//    for (int i = 0; i < 1000; ++i) {
-//        for (int j = 0; j < 1024; ++j) {
-//            *out << "-408.104,";
-//        }
-//        *out << endl;
-//    }
-//    qDebug() << eltim.elapsed();
+    txtOutFiles = new QFile*[N_CHANNELS];
+    QString fName;
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        fName = filenameBase + QString::number(i);
+        txtOutFiles[i] = new QFile(fName, this);
+
+        if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+            qDebug() << "Cannot create a file!";
+    }
+    out = new QTextStream();
+
+    QElapsedTimer eltim;
+    eltim.start();
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        out->setDevice(txtOutFiles[i]);
+        for (int i = 0; i < 1000; ++i) {
+            for (int j = 0; j < 1024; ++j) {
+                *out << QString::number(-408.104 * j + i);
+            }
+            *out << endl;
+        }
+    }
+    qDebug() << eltim.elapsed();
+}
+
+WaveformsSaver::~WaveformsSaver()
+{
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        delete txtOutFiles[i];
+    }
+    delete[] txtOutFiles;
+    delete out;
 }
 
 void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
