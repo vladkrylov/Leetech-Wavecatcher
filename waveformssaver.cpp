@@ -12,7 +12,7 @@ WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
     txtOutFiles = new QFile*[N_CHANNELS];
     QString fName;
     for (int i = 0; i < N_CHANNELS; ++i) {
-        fName = filenameBase + QString::number(i);
+        fName = filenameBase + QString::number(i) + ".txt";
         txtOutFiles[i] = new QFile(fName, this);
 
         if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
@@ -36,20 +36,20 @@ WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
 
 WaveformsSaver::~WaveformsSaver()
 {
-    for (int i = 0; i < N_CHANNELS; ++i) {
-        delete txtOutFiles[i];
-    }
-    delete[] txtOutFiles;
-    delete out;
+//    for (int i = 0; i < N_CHANNELS; ++i) {
+//        delete txtOutFiles[i];
+//    }
+//    delete[] txtOutFiles;
+//    delete out;
 }
 
 void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
 {
 //    qDebug() << channel[0].Peak;
-    for (int i = 0; i < 1; ++i) {
-        out->setDevice(txtOutFiles[i]);
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        out->setDevice(txtOutFiles[ch]);
         for(int i = 0; i < channel[0].WaveformDataSize; i++) {
-            *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[i].WaveformData[i]) << ",";
+            *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[ch].WaveformData[i]) << ",";
         }
         *out << endl;
     }
