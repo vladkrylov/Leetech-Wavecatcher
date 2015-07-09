@@ -20,18 +20,18 @@ WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
     }
     out = new QTextStream();
 
-    QElapsedTimer eltim;
-    eltim.start();
-    for (int i = 0; i < N_CHANNELS; ++i) {
-        out->setDevice(txtOutFiles[i]);
-        for (int i = 0; i < 1000; ++i) {
-            for (int j = 0; j < 1024; ++j) {
-                *out << QString::number(-408.104 * j + i);
-            }
-            *out << endl;
-        }
-    }
-    qDebug() << eltim.elapsed();
+//    QElapsedTimer eltim;
+//    eltim.start();
+//    for (int i = 0; i < N_CHANNELS; ++i) {
+//        out->setDevice(txtOutFiles[i]);
+//        for (int i = 0; i < 1000; ++i) {
+//            for (int j = 0; j < 1024; ++j) {
+//                *out << QString::number(-408.104 * j + i);
+//            }
+//            *out << endl;
+//        }
+//    }
+//    qDebug() << eltim.elapsed();
 }
 
 WaveformsSaver::~WaveformsSaver()
@@ -46,9 +46,12 @@ WaveformsSaver::~WaveformsSaver()
 void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
 {
 //    qDebug() << channel[0].Peak;
-    for(int i = 0; i < channel[0].WaveformDataSize; i++) {
-        *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[0].WaveformData[i]) << ",";
+    for (int i = 0; i < 1; ++i) {
+        out->setDevice(txtOutFiles[i]);
+        for(int i = 0; i < channel[0].WaveformDataSize; i++) {
+            *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[i].WaveformData[i]) << ",";
+        }
+        *out << endl;
     }
-    *out << endl;
 }
 
