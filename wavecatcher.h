@@ -70,6 +70,7 @@ public:
     int Open(int* handle);
 
 signals:
+    void EventsAcquired(int numEvents);
     void DataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*);
     void PlotData(const WAVECAT64CH_ChannelDataStruct*);

@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << triggerLevelBox
                                   << setTriggerLevelButton
                                   << channelHScaleBox
+                                  << eventsRequiredBox
                                   ;
 }
 
@@ -61,6 +62,7 @@ void MainWindow::ConstructGUI()
     eventsRequiredLayout->addWidget(eventsRequiredLabel = new QLabel(tr("Events required:"), this));
     eventsRequiredLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     eventsRequiredLayout->addWidget(eventsRequiredBox = new QLineEdit(this));
+    eventsRequiredBox->setAlignment(Qt::AlignCenter);
     eventsRequiredBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     QHBoxLayout* startStopLayout = new QHBoxLayout();
@@ -307,9 +309,6 @@ void MainWindow::RunModeChanged()
 
 void MainWindow::OnStartButtonClicked()
 {
-    foreach (QWidget* w, disableWhenAcquisitionRunning) {
-        w->setEnabled(false);
-    }
     // set run mode and number of acquisitions
     int runMode = 0;
     int nacq = 0;
@@ -317,6 +316,16 @@ void MainWindow::OnStartButtonClicked()
     else if (finiteMode->isChecked()) {
         runMode = 1;
         nacq = eventsRequiredBox->text().toInt();
+        if (!nacq) {
+            QMessageBox::critical(this
+                                  , tr("Error")
+                                  , tr("Number of acquisitions must be set before running.")
+                                  );
+            return;
+        }
+    }
+    foreach (QWidget* w, disableWhenAcquisitionRunning) {
+        w->setEnabled(false);
     }
     emit RunStarted(runMode, nacq);
 }
@@ -329,7 +338,17 @@ void MainWindow::OnStopButtonClicked()
     emit RunStopped();
 }
 
-
+void MainWindow::DisplayEventsAcquired(int nEvents)
+{
+    if (continuousMode->isChecked())
+        eventsRequiredBox->setText(QString::number(nEvents));
+    else if (finiteMode->isChecked()) {
+        QStringList l = eventsRequiredBox->text().split("/");
+        eventsRequiredBox->setText(QString::number(nEvents)
+                                   + "/"
+                                   + l.last());
+    }
+}
 
 
 

@@ -72,6 +72,7 @@ public:
 
 public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
+    void DisplayEventsAcquired(int nEvents);
 
 private slots:
     void ChannedEnDis();

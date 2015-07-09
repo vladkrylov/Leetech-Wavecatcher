@@ -41,6 +41,7 @@ void Controller::ConnectSignalSlots()
     connect(WCthread, SIGNAL(finished()), WCthread, SLOT(deleteLater()));
     connect(WCthread, SIGNAL(finished()), this, SLOT(Test()));
 
+    connect(wc, SIGNAL(EventsAcquired(int)), view, SLOT(DisplayEventsAcquired(int)));
     connect(wc, SIGNAL(PlotDataReceived(const WAVECAT64CH_ChannelDataStruct*)), view, SLOT(DrawWaveforms(const WAVECAT64CH_ChannelDataStruct*)));
 
     connect(view, SIGNAL(RunStopped()), wc, SLOT(onStop()), Qt::DirectConnection);
