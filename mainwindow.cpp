@@ -212,9 +212,22 @@ void MainWindow::SetValidastors()
 
 void MainWindow::ConstructMenus()
 {
-    channelsMenu = menuBar()->addMenu(tr("&Channels"));
+    displayChannelsMenu = menuBar()->addMenu(tr("&Display Channels"));
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        channelsMenu->addAction(channelsAction[ch]);
+        displayChannelsMenu->addAction(displayChannelsAction[ch]);
+        if ((ch != 1)
+            && (ch != 5)
+            )
+            displayChannelsAction[ch]->toggle();
+    }
+
+    saveChannelsMenu = menuBar()->addMenu(tr("&Save Channels"));
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        saveChannelsMenu->addAction(saveChannelsAction[ch]);
+        if ((ch != 1)
+            && (ch != 5)
+            )
+            saveChannelsAction[ch]->toggle();
     }
 }
 
@@ -222,19 +235,34 @@ void MainWindow::CreateActions()
 {
     bool defaultStatus = true;
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        channelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
-        channelsAction[ch]->setCheckable(true);
-        channelsAction[ch]->setChecked(defaultStatus);
+        displayChannelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
+        displayChannelsAction[ch]->setCheckable(true);
+        displayChannelsAction[ch]->setChecked(defaultStatus);
 
-        connect(channelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannedEnDis()));
+        connect(displayChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelEnDis()));
+    }
+
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        saveChannelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
+        saveChannelsAction[ch]->setCheckable(true);
+        saveChannelsAction[ch]->setChecked(defaultStatus);
+
+        connect(saveChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelSave()));
     }
 }
 
-void MainWindow::ChannedEnDis()
+void MainWindow::ChannelEnDis()
 {
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        scope->enabled[ch] = channelsAction[ch]->isChecked();
-        qDebug() << "Channel " << ch+1 << (channelsAction[ch]->isChecked() ? "enabled" : "disabled");
+        scope->enabled[ch] = displayChannelsAction[ch]->isChecked();
+        qDebug() << "Channel " << ch+1 << (displayChannelsAction[ch]->isChecked() ? "enabled" : "disabled");
+    }
+}
+
+void MainWindow::ChannelSave()
+{
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        emit SaveChannelsChanged(ch, saveChannelsAction[ch]->isChecked());
     }
 }
 

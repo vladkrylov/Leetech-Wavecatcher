@@ -81,7 +81,7 @@ public slots:
     void UpdateInterfaceOnStopRun();
 
 private slots:
-    void ChannedEnDis();
+    void ChannelEnDis();
     void OnStartButtonClicked();
     void OnStopButtonClicked();
     void SetVerticalScale();
@@ -93,6 +93,7 @@ private slots:
     void TriggerLevelChanged();
     void RunModeChanged();
     void OnPositionButtonClicked();
+    void ChannelSave();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);
@@ -103,17 +104,20 @@ signals:
     void SetRunMode(int runmode, int param);
     void HorizontalScaleChanged(int timelengthOfWaveform);
     void HorizonatalPositionChanged(unsigned char pos);
+    void SaveChannelsChanged(int channel, bool status);
 
 private:
     QWidget* cw;
     QMainCanvas* scope;
 
-    QMenu* channelsMenu;
+    QMenu* displayChannelsMenu;
+    QMenu* saveChannelsMenu;
 
     QList<QWidget*> disableWhenAcquisitionRunning;
 
     // actions
-    QAction* channelsAction[N_CHANNELS];
+    QAction* displayChannelsAction[N_CHANNELS];
+    QAction* saveChannelsAction[N_CHANNELS];
 
     void ConnectSignalsSlots();
     void SetValidastors();

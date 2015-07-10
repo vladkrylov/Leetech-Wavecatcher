@@ -1,5 +1,4 @@
 #include "waveformssaver.h"
-#include "wavecatcher.h"
 
 #include <QDebug>
 #include <QString>
@@ -47,11 +46,18 @@ void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
 {
 //    qDebug() << channel[0].Peak;
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        out->setDevice(txtOutFiles[ch]);
-        for(int i = 0; i < channel[0].WaveformDataSize; i++) {
-            *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[ch].WaveformData[i]) << ",";
+        if (saveChannel[ch]) {
+            out->setDevice(txtOutFiles[ch]);
+            for(int i = 0; i < channel[0].WaveformDataSize; i++) {
+                *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[ch].WaveformData[i]) << ",";
+            }
+            *out << endl;
         }
-        *out << endl;
     }
 }
 
+void WaveformsSaver::SetChannelsToSave(int channel, bool status)
+{
+    saveChannel[channel] = status;
+    qDebug() << status;
+}

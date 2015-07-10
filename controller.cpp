@@ -54,6 +54,7 @@ void Controller::ConnectSignalSlots()
     connect(view, SIGNAL(HorizonatalPositionChanged(unsigned char)), wc, SLOT(SetTriggerDelay(unsigned char)), Qt::DirectConnection);
 
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
+    connect(view, SIGNAL(SaveChannelsChanged(int,bool)), saver, SLOT(SetChannelsToSave(int,bool)), Qt::DirectConnection);
 }
 
 void Controller::Test()
