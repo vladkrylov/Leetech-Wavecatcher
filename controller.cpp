@@ -13,13 +13,13 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
     view = new MainWindow();
     view->resize(view->sizeHint());
-    view->setWindowTitle("Qt Example - Canvas");
+    view->setWindowTitle("LEETECH USB Wavecatcher software");
     view->setGeometry(100, 100, 1700, 900);
     view->show();
 
-    saverThread = new QThread(this);
+//    saverThread = new QThread(this);
     saver = new WaveformsSaver();
-    saver->moveToThread(saverThread);
+//    saver->moveToThread(saverThread);
 
     ConnectSignalSlots();
 

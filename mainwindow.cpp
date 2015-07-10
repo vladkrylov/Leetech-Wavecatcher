@@ -374,7 +374,7 @@ void MainWindow::OnStartButtonClicked()
 {
     if (saveWfBox->isChecked()) {
         QDir d(saveDir);
-        emit RunDirectoryChanged(d.absoluteFilePath(runIDLine->text()));
+        emit RunDirectoryChanged(d.absoluteFilePath("Run" + runIDLine->text()));
     }
 
     // set run mode and number of acquisitions

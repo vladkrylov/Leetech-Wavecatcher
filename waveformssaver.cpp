@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QString>
 #include <QElapsedTimer>
+#include <QDir>
 
 WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
 {
@@ -66,15 +67,25 @@ void WaveformsSaver::SetChannelsToSave(int channel, bool status)
 
 void WaveformsSaver::SetRunDir(QString path)
 {
-    qDebug() << path;
-//    QString fName;
-//    for (int i = 0; i < N_CHANNELS; ++i) {
-//        fName = filenameBase + QString::number(i) + ".txt";
-//        txtOutFiles[i] = new QFile(fName, this);
+//    qDebug() << path;
+    QString fName;
 
-//        if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
-//            qDebug() << "Cannot create a file!";
-//    }
+    // delete existing files
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        delete txtOutFiles[i];
+    }
+
+    // construct new files
+    QDir d(path);
+    if (!d.exists()) d.mkpath(".");
+
+    for (int i = 0; i < N_CHANNELS; ++i) {
+        fName = path + "\\" + filenameBase + QString::number(i) + ".txt";
+        txtOutFiles[i] = new QFile(fName, this);
+
+        if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+            qDebug() << "Cannot create a file!";
+    }
 }
 
 void WaveformsSaver::Enable(bool status)
