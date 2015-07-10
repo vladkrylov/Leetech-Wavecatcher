@@ -77,7 +77,7 @@ void MainWindow::ConstructGUI()
     stopButton->setMinimumHeight(50);
 
     rightPanelLayout->addWidget(saveWfLabel = new QCheckBox(tr("Save waveforms"), this));
-    rightPanelLayout->addWidget(saveOptButton = new QPushButton(tr("Save Options"), this));
+    rightPanelLayout->addWidget(saveDirButton = new QPushButton(tr("Choose Save Directory"), this));
 
     rightPanelLayout->addWidget(horizontalLine1 = new QFrame(this));
     horizontalLine1->setFrameShape(QFrame::HLine);
@@ -189,6 +189,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
     connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
+    connect(saveDirButton, SIGNAL(clicked(bool)), this, SLOT(OnSaveDirButtonClicked()));
 
     connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
     connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
@@ -407,4 +408,10 @@ void MainWindow::OnPositionButtonClicked()
 {
     unsigned char pos = horizontalPositionBox->text().toShort();
     emit HorizonatalPositionChanged(pos);
+}
+
+void MainWindow::OnSaveDirButtonClicked()
+{
+    QString path = QFileDialog::getExistingDirectory(this, tr("Choose directory"));
+    emit RunDirectoryChanged(path);
 }

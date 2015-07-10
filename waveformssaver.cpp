@@ -61,3 +61,9 @@ void WaveformsSaver::SetChannelsToSave(int channel, bool status)
     saveChannel[channel] = status;
     qDebug() << status;
 }
+
+void WaveformsSaver::SetRunDir(QString path)
+{
+    qDebug() << path;
+}
+

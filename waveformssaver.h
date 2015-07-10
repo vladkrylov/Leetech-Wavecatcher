@@ -20,6 +20,7 @@ public:
 public slots:
     void SaveData(const WAVECAT64CH_ChannelDataStruct *channel);
     void SetChannelsToSave(int channel, bool status);
+    void SetRunDir(QString path);
 
 signals:
 

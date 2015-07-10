@@ -31,7 +31,7 @@ public:
     QPushButton* startButton;
     QPushButton* stopButton;
     QCheckBox* saveWfLabel;
-    QPushButton* saveOptButton;
+    QPushButton* saveDirButton;
 
     QFrame* horizontalLine1;
 
@@ -94,6 +94,7 @@ private slots:
     void TriggerLevelChanged();
     void RunModeChanged();
     void OnPositionButtonClicked();
+    void OnSaveDirButtonClicked();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);
@@ -105,6 +106,7 @@ signals:
     void HorizontalScaleChanged(int timelengthOfWaveform);
     void HorizonatalPositionChanged(unsigned char pos);
     void SaveChannelsChanged(int channel, bool status);
+    void RunDirectoryChanged(QString path);
 
 private:
     QWidget* cw;
