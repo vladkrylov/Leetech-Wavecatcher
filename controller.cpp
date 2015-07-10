@@ -60,6 +60,7 @@ void Controller::ConnectSignalSlots()
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
     connect(view, SIGNAL(SaveChannelsChanged(int,bool)), saver, SLOT(SetChannelsToSave(int,bool)), Qt::DirectConnection);
     connect(view, SIGNAL(RunDirectoryChanged(QString)), saver, SLOT(SetRunDir(QString)), Qt::DirectConnection);
+    connect(view, SIGNAL(SetSaveStatus(bool)), saver, SLOT(Enable(bool)), Qt::DirectConnection);
 }
 
 void Controller::Test()

@@ -30,8 +30,10 @@ public:
 
     QPushButton* startButton;
     QPushButton* stopButton;
-    QCheckBox* saveWfLabel;
+    QCheckBox* saveWfBox;
     QPushButton* saveDirButton;
+    QLabel* runIDLabel;
+    QLineEdit* runIDLine;
 
     QFrame* horizontalLine1;
 
@@ -95,6 +97,7 @@ private slots:
     void RunModeChanged();
     void OnPositionButtonClicked();
     void OnSaveDirButtonClicked();
+    void OnSaveBoxClicked();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);
@@ -106,6 +109,7 @@ signals:
     void HorizontalScaleChanged(int timelengthOfWaveform);
     void HorizonatalPositionChanged(unsigned char pos);
     void SaveChannelsChanged(int channel, bool status);
+    void SetSaveStatus(bool status);
     void RunDirectoryChanged(QString path);
 
 private:
@@ -117,12 +121,14 @@ private:
 
     QList<QWidget*> disableWhenAcquisitionRunning;
 
+    QString saveDir;
+
     // actions
     QAction* displayChannelsAction[N_CHANNELS];
     QAction* saveChannelsAction[N_CHANNELS];
 
     void ConnectSignalsSlots();
-    void SetValidastors();
+    void SetValidators();
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();

@@ -10,15 +10,18 @@ MainWindow::MainWindow(QWidget *parent) :
     scope = new QMainCanvas(cw);
     setCentralWidget(cw);
 
+    saveDir = "";
+
     ConstructGUI();
 
-    SetValidastors();
+    SetValidators();
     SetScales(channelScaleBox->currentData().toFloat());
     SetOffsets();
     ConnectSignalsSlots();
 
     // display actual channels settings
     emit selectChannelBox->currentIndexChanged(selectChannelBox->currentIndex());
+    runIDLine->setText("1");
 
     disableWhenAcquisitionRunning << triggerSourceBox
                                   << typeOfTriggerBox
@@ -29,7 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << horizontalPositionBox
                                   << horizontalPositionButton
                                   << saveChannelsMenu
-                                  << saveWfLabel
+                                  << saveWfBox
+                                  << runIDLine
                                   ;
 }
 
@@ -76,8 +80,16 @@ void MainWindow::ConstructGUI()
     startStopLayout->addWidget(stopButton = new QPushButton(tr("Stop"), this));
     stopButton->setMinimumHeight(50);
 
-    rightPanelLayout->addWidget(saveWfLabel = new QCheckBox(tr("Save waveforms"), this));
+    rightPanelLayout->addWidget(saveWfBox = new QCheckBox(tr("Save waveforms"), this));
     rightPanelLayout->addWidget(saveDirButton = new QPushButton(tr("Choose Save Directory"), this));
+
+    QHBoxLayout* runIDLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(runIDLayout);
+    runIDLayout->addWidget(runIDLabel = new QLabel(tr("Run ID"), this));
+    runIDLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    runIDLayout->addWidget(runIDLine = new QLineEdit(this));
+    runIDLine->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    runIDLine->setAlignment(Qt::AlignCenter);
 
     rightPanelLayout->addWidget(horizontalLine1 = new QFrame(this));
     horizontalLine1->setFrameShape(QFrame::HLine);
@@ -190,6 +202,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
     connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
     connect(saveDirButton, SIGNAL(clicked(bool)), this, SLOT(OnSaveDirButtonClicked()));
+    connect(saveWfBox, SIGNAL(clicked(bool)), this, SLOT(OnSaveBoxClicked()));
 
     connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
     connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
@@ -201,7 +214,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(setTriggerLevelButton, SIGNAL(clicked(bool)), this, SLOT(TriggerLevelChanged()));
 }
 
-void MainWindow::SetValidastors()
+void MainWindow::SetValidators()
 {
     QIntValidator* nrunsValidator = new QIntValidator(0, 1e9, this);
     eventsRequiredBox->setValidator(nrunsValidator);
@@ -211,6 +224,9 @@ void MainWindow::SetValidastors()
 
     QIntValidator* horizontalPositionValidator = new QIntValidator(0, 255, this);
     horizontalPositionBox->setValidator(horizontalPositionValidator);
+
+    QIntValidator* runIDValidator = new QIntValidator(0, 1e9, this);
+    runIDLine->setValidator(runIDValidator);
 }
 
 void MainWindow::ConstructMenus()
@@ -356,6 +372,11 @@ void MainWindow::RunModeChanged()
 
 void MainWindow::OnStartButtonClicked()
 {
+    if (saveWfBox->isChecked()) {
+        QDir d(saveDir);
+        emit RunDirectoryChanged(d.absoluteFilePath(runIDLine->text()));
+    }
+
     // set run mode and number of acquisitions
     int runMode = 0;
     int nacq = 0;
@@ -371,9 +392,11 @@ void MainWindow::OnStartButtonClicked()
             return;
         }
     }
+
     foreach (QWidget* w, disableWhenAcquisitionRunning) {
         w->setEnabled(false);
     }
+
     emit RunStarted(runMode, nacq);
 }
 
@@ -402,6 +425,7 @@ void MainWindow::UpdateInterfaceOnStopRun()
     }
     QStringList l = eventsRequiredBox->text().split("/");
     eventsRequiredBox->setText(l.first());
+    runIDLine->setText(QString::number(runIDLine->text().toInt() + 1));
 }
 
 void MainWindow::OnPositionButtonClicked()
@@ -412,6 +436,15 @@ void MainWindow::OnPositionButtonClicked()
 
 void MainWindow::OnSaveDirButtonClicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Choose directory"));
-    emit RunDirectoryChanged(path);
+    saveDir = QFileDialog::getExistingDirectory(this, tr("Choose directory"));
+}
+
+void MainWindow::OnSaveBoxClicked()
+{
+    if (saveWfBox->isChecked()) {
+        if (saveDir.isEmpty()) OnSaveDirButtonClicked();
+        emit SetSaveStatus(true);
+    } else {
+        emit SetSaveStatus(false);
+    }
 }
