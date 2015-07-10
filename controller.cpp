@@ -22,6 +22,10 @@ Controller::Controller(QObject *parent) : QObject(parent)
     saver->moveToThread(saverThread);
 
     ConnectSignalSlots();
+
+    // set channels to save
+    view->ChannelsSave();
+
     WCthread->start();
 }
 

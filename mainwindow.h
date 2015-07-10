@@ -79,6 +79,7 @@ public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
     void DisplayEventsAcquired(int nEvents);
     void UpdateInterfaceOnStopRun();
+    void ChannelsSave();
 
 private slots:
     void ChannelEnDis();
@@ -93,7 +94,6 @@ private slots:
     void TriggerLevelChanged();
     void RunModeChanged();
     void OnPositionButtonClicked();
-    void ChannelSave();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);

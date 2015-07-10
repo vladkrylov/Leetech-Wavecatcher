@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << eventsRequiredBox
                                   << horizontalPositionBox
                                   << horizontalPositionButton
+                                  << saveChannelsMenu
+                                  << saveWfLabel
                                   ;
 }
 
@@ -247,7 +249,7 @@ void MainWindow::CreateActions()
         saveChannelsAction[ch]->setCheckable(true);
         saveChannelsAction[ch]->setChecked(defaultStatus);
 
-        connect(saveChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelSave()));
+        connect(saveChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelsSave()));
     }
 }
 
@@ -255,11 +257,11 @@ void MainWindow::ChannelEnDis()
 {
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         scope->enabled[ch] = displayChannelsAction[ch]->isChecked();
-        qDebug() << "Channel " << ch+1 << (displayChannelsAction[ch]->isChecked() ? "enabled" : "disabled");
+//        qDebug() << "Channel " << ch << (displayChannelsAction[ch]->isChecked() ? "enabled" : "disabled");
     }
 }
 
-void MainWindow::ChannelSave()
+void MainWindow::ChannelsSave()
 {
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         emit SaveChannelsChanged(ch, saveChannelsAction[ch]->isChecked());
