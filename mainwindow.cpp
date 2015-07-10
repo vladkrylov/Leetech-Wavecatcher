@@ -238,7 +238,7 @@ void MainWindow::ConstructMenus()
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         displayChannelsMenu->addAction(displayChannelsAction[ch]);
         if ((ch != 1)
-            && (ch != 5)
+            && (ch != 0)
             )
             displayChannelsAction[ch]->toggle();
     }
@@ -247,7 +247,7 @@ void MainWindow::ConstructMenus()
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         saveChannelsMenu->addAction(saveChannelsAction[ch]);
         if ((ch != 1)
-            && (ch != 5)
+            && (ch != 0)
             )
             saveChannelsAction[ch]->toggle();
     }

@@ -62,7 +62,7 @@ void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
                 *out << endl;
 
                 out->setDevice(txtAmpFiles[ch]);
-                *out << channel[ch].Peak << endl;
+                *out << channel[ch].Peak * WAVECAT64CH_ADCTOVOLTS << endl;
             }
         }
     }
