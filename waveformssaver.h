@@ -27,7 +27,9 @@ signals:
 
 private:
     bool saveEnabled;
-    QString filenameBase;
+    QString wfFilenameBase;
+    QString ampFilenameBase;
+
     QFile** txtWaveformFiles;
     QFile** txtAmpFiles;
     QTextStream* out;

@@ -138,7 +138,7 @@ void MainWindow::ConstructGUI()
     horizontalPositionLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     horizontalPositionLayout->addWidget(horizontalPositionBox = new QLineEdit(this));
     horizontalPositionBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    horizontalPositionLayout->addWidget(horizontalPositionLabel2 = new QLabel(tr("?"), this));
+    horizontalPositionLayout->addWidget(horizontalPositionLabel2 = new QLabel(tr("a.u."), this));
     horizontalPositionLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     horizontalPositionLayout->addWidget(horizontalPositionButton = new QPushButton(tr("Set"), this));
 

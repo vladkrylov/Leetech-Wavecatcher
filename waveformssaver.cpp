@@ -8,16 +8,21 @@
 WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
 {
     saveEnabled = false;
-    filenameBase = "Ch_";
+    wfFilenameBase = "Ch_";
+    ampFilenameBase = "Amp_Ch_";
 
     txtWaveformFiles = new QFile*[N_CHANNELS];
-    txtWaveformFiles = new QFile*[N_CHANNELS];
+    txtAmpFiles = new QFile*[N_CHANNELS];
     QString fWaveformsName, fAmpsName;
     for (int i = 0; i < N_CHANNELS; ++i) {
-        fWaveformsName = filenameBase + QString::number(i) + ".txt";
+        fWaveformsName = wfFilenameBase + QString::number(i) + ".txt";
         txtWaveformFiles[i] = new QFile(fWaveformsName, this);
-
         if (!txtWaveformFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+            qDebug() << "Cannot create a file!";
+
+        fAmpsName = ampFilenameBase + QString::number(i) + ".txt";
+        txtAmpFiles[i] = new QFile(fAmpsName, this);
+        if (!txtAmpFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Cannot create a file!";
     }
     out = new QTextStream();
@@ -55,6 +60,9 @@ void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
                     *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[ch].WaveformData[i]) << ",";
                 }
                 *out << endl;
+
+                out->setDevice(txtAmpFiles[ch]);
+                *out << channel[ch].Peak << endl;
             }
         }
     }
@@ -81,10 +89,14 @@ void WaveformsSaver::SetRunDir(QString path)
     if (!d.exists()) d.mkpath(".");
 
     for (int i = 0; i < N_CHANNELS; ++i) {
-        fName = path + "\\" + filenameBase + QString::number(i) + ".txt";
+        fName = path + "\\" + wfFilenameBase + QString::number(i) + ".txt";
         txtWaveformFiles[i] = new QFile(fName, this);
-
         if (!txtWaveformFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+            qDebug() << "Cannot create a file!";
+
+        fName = path + "\\" + ampFilenameBase + QString::number(i) + ".txt";
+        txtAmpFiles[i] = new QFile(fName, this);
+        if (!txtAmpFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Cannot create a file!";
     }
 }
