@@ -253,15 +253,18 @@ void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
 {
     WAVECAT64CH_SamplingFrequencyType f;
     switch(timelengthOfWaveform) { // in nanoseconds
+
     case 320:
         f = WAVECAT64CH_3_2GHZ;
         break;
     case 480:
         f = WAVECAT64CH_2_13GHZ;
         break;
-
     case 640:
         f = WAVECAT64CH_1_6GHZ;
+        break;
+    case 800:
+        f = WAVECAT64CH_1_28GHZ;
         break;
     case 960:
         f = WAVECAT64CH_1_07GHZ;
@@ -276,6 +279,7 @@ void Wavecatcher::SetSamplingFrequency(int timelengthOfWaveform)
         f = WAVECAT64CH_400MHZ;
         break;
     default:
+        f = WAVECAT64CH_3_2GHZ;
         break;
     }
     qDebug() << WAVECAT64CH_SetSamplingFrequency(f);

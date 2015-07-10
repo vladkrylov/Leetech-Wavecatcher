@@ -47,6 +47,9 @@ public:
    float baselines[N_CHANNELS];
    float scales[N_CHANNELS];
 
+   int xMinInd;
+   int xMaxInd;
+
 
 public slots:
 //   void handle_root_events();
@@ -56,6 +59,7 @@ private:
    TGraph* gr[N_CHANNELS];
 
    float h;
+
 
 
 protected:

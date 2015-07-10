@@ -118,6 +118,7 @@ private:
 
     QMenu* displayChannelsMenu;
     QMenu* saveChannelsMenu;
+    QMenu* histMenu;
 
     QList<QWidget*> disableWhenAcquisitionRunning;
 
@@ -126,6 +127,7 @@ private:
     // actions
     QAction* displayChannelsAction[N_CHANNELS];
     QAction* saveChannelsAction[N_CHANNELS];
+    QAction* histAction;
 
     void ConnectSignalsSlots();
     void SetValidators();

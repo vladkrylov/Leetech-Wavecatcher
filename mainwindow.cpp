@@ -9,6 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
     cw = new QWidget(this);
     scope = new QMainCanvas(cw);
     setCentralWidget(cw);
+    scope->xMinInd = 0;
+    scope->xMaxInd = 1024;
 
     saveDir = "";
 
@@ -124,10 +126,11 @@ void MainWindow::ConstructGUI()
     channelHScaleLayout->addWidget(channelHScaleBox = new QComboBox(this));
     channelHScaleLayout->addWidget(channelHScaleLabel2 = new QLabel(tr("ns"), this));
     channelScaleLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    int Hscales[8] = {20, 30, 40, 50, 60, 80, 120, 160}; // ns
-    for (int i = 0; i < 8; ++i) {
+    float Hscales[12] = {1.25, 2.5, 5, 10, 20, 30, 40, 50, 60, 80, 120, 160}; // ns
+    for (int i = 0; i < 12; ++i) {
         channelHScaleBox->addItem(QString::number(Hscales[i]), Hscales[i]);
     }
+    channelHScaleBox->setCurrentIndex(4);
 
     QHBoxLayout* horizontalPositionLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(horizontalPositionLayout);
@@ -295,8 +298,32 @@ void MainWindow::SetVerticalScale()
 
 void MainWindow::SetHorizontalScale()
 {
-    int val = channelHScaleBox->currentData().toInt();
-    emit HorizontalScaleChanged(val * scope->N_HORIZONTAL_DIVISIONS);
+    float val = channelHScaleBox->currentData().toDouble();
+    int fullscale = val * scope->N_HORIZONTAL_DIVISIONS;
+    switch (fullscale) {
+    case 20:
+        scope->xMinInd = 480;
+        scope->xMaxInd = 544;
+        break;
+    case 40:
+        scope->xMinInd = 448;
+        scope->xMaxInd = 576;
+        break;
+    case 80:
+        scope->xMinInd = 384;
+        scope->xMaxInd = 640;
+        break;
+    case 160:
+        scope->xMinInd = 256;
+        scope->xMaxInd = 768;
+        break;
+    default:
+        scope->xMinInd = 0;
+        scope->xMaxInd = 1024;
+        break;
+    }
+
+    emit HorizontalScaleChanged(fullscale);
 }
 
 void MainWindow::SetScales()
