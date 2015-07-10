@@ -186,7 +186,7 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
     QElapsedTimer eltim;
     eltim.start();
 
-    int size = ChannelData[0].WaveformDataSize;
+//    int size = ChannelData[0].WaveformDataSize;
 
     canvas->getCanvas()->Clear();
 //    canvas->getCanvas()->cd();
@@ -197,14 +197,14 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
 //    gr[0]->Set(size);
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
         if (enabled[ch]) {
-            for (int i = 0; i < size; ++i) {
-                gr[ch]->SetPoint(i, i,
-                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/N_VERTICAL_DIVISIONS /scales[ch] * ChannelData[ch].WaveformData[i] + baselines[ch] * h / 100.);
+            for (int i = 0; i < xMaxInd-xMinInd; ++i) {
+                gr[ch]->Clear();
+                gr[ch]->Set(xMaxInd-xMinInd);
+                gr[ch]->SetPoint(i, i + xMinInd,
+                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/N_VERTICAL_DIVISIONS /scales[ch] * ChannelData[ch].WaveformData[i+xMinInd] + baselines[ch] * h / 100.);
             }
         }
     }
-
-
 
     // draw first enabled channel
     int drawn = -1;
@@ -212,7 +212,7 @@ void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData
         if (enabled[ch]) {
             gr[ch]->SetFillColor(kViolet + 2);
             gr[ch]->SetFillStyle(3001);
-            gr[ch]->GetXaxis()->SetLimits(0, size);
+            gr[ch]->GetXaxis()->SetLimits(xMinInd, xMaxInd);
             gr[ch]->GetXaxis()->SetLabelSize(0);
             gr[ch]->GetXaxis()->SetNdivisions(N_HORIZONTAL_DIVISIONS, false);
             gr[ch]->GetYaxis()->SetNdivisions(N_VERTICAL_DIVISIONS, false);

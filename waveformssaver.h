@@ -28,7 +28,8 @@ signals:
 private:
     bool saveEnabled;
     QString filenameBase;
-    QFile** txtOutFiles;
+    QFile** txtWaveformFiles;
+    QFile** txtAmpFiles;
     QTextStream* out;
 
     bool saveChannel[N_CHANNELS];

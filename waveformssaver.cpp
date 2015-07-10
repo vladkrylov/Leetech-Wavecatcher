@@ -10,13 +10,14 @@ WaveformsSaver::WaveformsSaver(QObject *parent) : QObject(parent)
     saveEnabled = false;
     filenameBase = "Ch_";
 
-    txtOutFiles = new QFile*[N_CHANNELS];
-    QString fName;
+    txtWaveformFiles = new QFile*[N_CHANNELS];
+    txtWaveformFiles = new QFile*[N_CHANNELS];
+    QString fWaveformsName, fAmpsName;
     for (int i = 0; i < N_CHANNELS; ++i) {
-        fName = filenameBase + QString::number(i) + ".txt";
-        txtOutFiles[i] = new QFile(fName, this);
+        fWaveformsName = filenameBase + QString::number(i) + ".txt";
+        txtWaveformFiles[i] = new QFile(fWaveformsName, this);
 
-        if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+        if (!txtWaveformFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Cannot create a file!";
     }
     out = new QTextStream();
@@ -49,7 +50,7 @@ void WaveformsSaver::SaveData(const WAVECAT64CH_ChannelDataStruct* channel)
     if (saveEnabled) {
         for (int ch = 0; ch < N_CHANNELS; ++ch) {
             if (saveChannel[ch]) {
-                out->setDevice(txtOutFiles[ch]);
+                out->setDevice(txtWaveformFiles[ch]);
                 for(int i = 0; i < channel[0].WaveformDataSize; i++) {
                     *out << QString::number(WAVECAT64CH_ADCTOVOLTS * channel[ch].WaveformData[i]) << ",";
                 }
@@ -72,7 +73,7 @@ void WaveformsSaver::SetRunDir(QString path)
 
     // delete existing files
     for (int i = 0; i < N_CHANNELS; ++i) {
-        delete txtOutFiles[i];
+        delete txtWaveformFiles[i];
     }
 
     // construct new files
@@ -81,9 +82,9 @@ void WaveformsSaver::SetRunDir(QString path)
 
     for (int i = 0; i < N_CHANNELS; ++i) {
         fName = path + "\\" + filenameBase + QString::number(i) + ".txt";
-        txtOutFiles[i] = new QFile(fName, this);
+        txtWaveformFiles[i] = new QFile(fName, this);
 
-        if (!txtOutFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
+        if (!txtWaveformFiles[i]->open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Cannot create a file!";
     }
 }
