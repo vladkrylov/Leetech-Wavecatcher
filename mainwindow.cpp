@@ -10,15 +10,18 @@ MainWindow::MainWindow(QWidget *parent) :
     scope = new QMainCanvas(cw);
     setCentralWidget(cw);
 
+    saveDir = "";
+
     ConstructGUI();
 
-    SetValidastors();
+    SetValidators();
     SetScales(channelScaleBox->currentData().toFloat());
     SetOffsets();
     ConnectSignalsSlots();
 
     // display actual channels settings
     emit selectChannelBox->currentIndexChanged(selectChannelBox->currentIndex());
+    runIDLine->setText("1");
 
     disableWhenAcquisitionRunning << triggerSourceBox
                                   << typeOfTriggerBox
@@ -28,6 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
                                   << eventsRequiredBox
                                   << horizontalPositionBox
                                   << horizontalPositionButton
+                                  << saveChannelsMenu
+                                  << saveWfBox
+                                  << runIDLine
                                   ;
 }
 
@@ -74,8 +80,16 @@ void MainWindow::ConstructGUI()
     startStopLayout->addWidget(stopButton = new QPushButton(tr("Stop"), this));
     stopButton->setMinimumHeight(50);
 
-    rightPanelLayout->addWidget(saveWfLabel = new QCheckBox(tr("Save waveforms"), this));
-    rightPanelLayout->addWidget(saveOptButton = new QPushButton(tr("Save Options"), this));
+    rightPanelLayout->addWidget(saveWfBox = new QCheckBox(tr("Save waveforms"), this));
+    rightPanelLayout->addWidget(saveDirButton = new QPushButton(tr("Choose Save Directory"), this));
+
+    QHBoxLayout* runIDLayout = new QHBoxLayout();
+    rightPanelLayout->addLayout(runIDLayout);
+    runIDLayout->addWidget(runIDLabel = new QLabel(tr("Run ID"), this));
+    runIDLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    runIDLayout->addWidget(runIDLine = new QLineEdit(this));
+    runIDLine->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    runIDLine->setAlignment(Qt::AlignCenter);
 
     rightPanelLayout->addWidget(horizontalLine1 = new QFrame(this));
     horizontalLine1->setFrameShape(QFrame::HLine);
@@ -187,6 +201,8 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
     connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
     connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
+    connect(saveDirButton, SIGNAL(clicked(bool)), this, SLOT(OnSaveDirButtonClicked()));
+    connect(saveWfBox, SIGNAL(clicked(bool)), this, SLOT(OnSaveBoxClicked()));
 
     connect(triggerType1, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
     connect(triggerType2, SIGNAL(clicked(bool)), this, SLOT(TriggerTypeChanged()));
@@ -198,7 +214,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(setTriggerLevelButton, SIGNAL(clicked(bool)), this, SLOT(TriggerLevelChanged()));
 }
 
-void MainWindow::SetValidastors()
+void MainWindow::SetValidators()
 {
     QIntValidator* nrunsValidator = new QIntValidator(0, 1e9, this);
     eventsRequiredBox->setValidator(nrunsValidator);
@@ -208,13 +224,29 @@ void MainWindow::SetValidastors()
 
     QIntValidator* horizontalPositionValidator = new QIntValidator(0, 255, this);
     horizontalPositionBox->setValidator(horizontalPositionValidator);
+
+    QIntValidator* runIDValidator = new QIntValidator(0, 1e9, this);
+    runIDLine->setValidator(runIDValidator);
 }
 
 void MainWindow::ConstructMenus()
 {
-    channelsMenu = menuBar()->addMenu(tr("&Channels"));
+    displayChannelsMenu = menuBar()->addMenu(tr("&Display Channels"));
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        channelsMenu->addAction(channelsAction[ch]);
+        displayChannelsMenu->addAction(displayChannelsAction[ch]);
+        if ((ch != 1)
+            && (ch != 5)
+            )
+            displayChannelsAction[ch]->toggle();
+    }
+
+    saveChannelsMenu = menuBar()->addMenu(tr("&Save Channels"));
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        saveChannelsMenu->addAction(saveChannelsAction[ch]);
+        if ((ch != 1)
+            && (ch != 5)
+            )
+            saveChannelsAction[ch]->toggle();
     }
 }
 
@@ -222,19 +254,34 @@ void MainWindow::CreateActions()
 {
     bool defaultStatus = true;
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        channelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
-        channelsAction[ch]->setCheckable(true);
-        channelsAction[ch]->setChecked(defaultStatus);
+        displayChannelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
+        displayChannelsAction[ch]->setCheckable(true);
+        displayChannelsAction[ch]->setChecked(defaultStatus);
 
-        connect(channelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannedEnDis()));
+        connect(displayChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelEnDis()));
+    }
+
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        saveChannelsAction[ch] = new QAction(QString("Channel ") + QString::number(ch), this);
+        saveChannelsAction[ch]->setCheckable(true);
+        saveChannelsAction[ch]->setChecked(defaultStatus);
+
+        connect(saveChannelsAction[ch], SIGNAL(toggled(bool)), this, SLOT(ChannelsSave()));
     }
 }
 
-void MainWindow::ChannedEnDis()
+void MainWindow::ChannelEnDis()
 {
     for (int ch = 0; ch < N_CHANNELS; ++ch) {
-        scope->enabled[ch] = channelsAction[ch]->isChecked();
-        qDebug() << "Channel " << ch+1 << (channelsAction[ch]->isChecked() ? "enabled" : "disabled");
+        scope->enabled[ch] = displayChannelsAction[ch]->isChecked();
+//        qDebug() << "Channel " << ch << (displayChannelsAction[ch]->isChecked() ? "enabled" : "disabled");
+    }
+}
+
+void MainWindow::ChannelsSave()
+{
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        emit SaveChannelsChanged(ch, saveChannelsAction[ch]->isChecked());
     }
 }
 
@@ -325,6 +372,11 @@ void MainWindow::RunModeChanged()
 
 void MainWindow::OnStartButtonClicked()
 {
+    if (saveWfBox->isChecked()) {
+        QDir d(saveDir);
+        emit RunDirectoryChanged(d.absoluteFilePath("Run" + runIDLine->text()));
+    }
+
     // set run mode and number of acquisitions
     int runMode = 0;
     int nacq = 0;
@@ -340,9 +392,11 @@ void MainWindow::OnStartButtonClicked()
             return;
         }
     }
+
     foreach (QWidget* w, disableWhenAcquisitionRunning) {
         w->setEnabled(false);
     }
+
     emit RunStarted(runMode, nacq);
 }
 
@@ -371,10 +425,26 @@ void MainWindow::UpdateInterfaceOnStopRun()
     }
     QStringList l = eventsRequiredBox->text().split("/");
     eventsRequiredBox->setText(l.first());
+    runIDLine->setText(QString::number(runIDLine->text().toInt() + 1));
 }
 
 void MainWindow::OnPositionButtonClicked()
 {
     unsigned char pos = horizontalPositionBox->text().toShort();
     emit HorizonatalPositionChanged(pos);
+}
+
+void MainWindow::OnSaveDirButtonClicked()
+{
+    saveDir = QFileDialog::getExistingDirectory(this, tr("Choose directory"));
+}
+
+void MainWindow::OnSaveBoxClicked()
+{
+    if (saveWfBox->isChecked()) {
+        if (saveDir.isEmpty()) OnSaveDirButtonClicked();
+        emit SetSaveStatus(true);
+    } else {
+        emit SetSaveStatus(false);
+    }
 }

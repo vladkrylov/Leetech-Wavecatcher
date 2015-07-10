@@ -30,8 +30,10 @@ public:
 
     QPushButton* startButton;
     QPushButton* stopButton;
-    QCheckBox* saveWfLabel;
-    QPushButton* saveOptButton;
+    QCheckBox* saveWfBox;
+    QPushButton* saveDirButton;
+    QLabel* runIDLabel;
+    QLineEdit* runIDLine;
 
     QFrame* horizontalLine1;
 
@@ -79,9 +81,10 @@ public slots:
     void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
     void DisplayEventsAcquired(int nEvents);
     void UpdateInterfaceOnStopRun();
+    void ChannelsSave();
 
 private slots:
-    void ChannedEnDis();
+    void ChannelEnDis();
     void OnStartButtonClicked();
     void OnStopButtonClicked();
     void SetVerticalScale();
@@ -93,6 +96,8 @@ private slots:
     void TriggerLevelChanged();
     void RunModeChanged();
     void OnPositionButtonClicked();
+    void OnSaveDirButtonClicked();
+    void OnSaveBoxClicked();
 
 signals:
     void RunStarted(int runMode, int numberOfAcquisitions);
@@ -103,20 +108,27 @@ signals:
     void SetRunMode(int runmode, int param);
     void HorizontalScaleChanged(int timelengthOfWaveform);
     void HorizonatalPositionChanged(unsigned char pos);
+    void SaveChannelsChanged(int channel, bool status);
+    void SetSaveStatus(bool status);
+    void RunDirectoryChanged(QString path);
 
 private:
     QWidget* cw;
     QMainCanvas* scope;
 
-    QMenu* channelsMenu;
+    QMenu* displayChannelsMenu;
+    QMenu* saveChannelsMenu;
 
     QList<QWidget*> disableWhenAcquisitionRunning;
 
+    QString saveDir;
+
     // actions
-    QAction* channelsAction[N_CHANNELS];
+    QAction* displayChannelsAction[N_CHANNELS];
+    QAction* saveChannelsAction[N_CHANNELS];
 
     void ConnectSignalsSlots();
-    void SetValidastors();
+    void SetValidators();
     void ConstructGUI();
     void CreateActions();
     void ConstructMenus();

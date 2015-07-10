@@ -13,15 +13,19 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
     view = new MainWindow();
     view->resize(view->sizeHint());
-    view->setWindowTitle("Qt Example - Canvas");
+    view->setWindowTitle("LEETECH USB Wavecatcher software");
     view->setGeometry(100, 100, 1700, 900);
     view->show();
 
-    saverThread = new QThread(this);
+//    saverThread = new QThread(this);
     saver = new WaveformsSaver();
-    saver->moveToThread(saverThread);
+//    saver->moveToThread(saverThread);
 
     ConnectSignalSlots();
+
+    // set channels to save
+    view->ChannelsSave();
+
     WCthread->start();
 }
 
@@ -54,6 +58,9 @@ void Controller::ConnectSignalSlots()
     connect(view, SIGNAL(HorizonatalPositionChanged(unsigned char)), wc, SLOT(SetTriggerDelay(unsigned char)), Qt::DirectConnection);
 
     connect(wc, SIGNAL(DataReceived(const WAVECAT64CH_ChannelDataStruct*)), saver, SLOT(SaveData(const WAVECAT64CH_ChannelDataStruct*)), Qt::DirectConnection);
+    connect(view, SIGNAL(SaveChannelsChanged(int,bool)), saver, SLOT(SetChannelsToSave(int,bool)), Qt::DirectConnection);
+    connect(view, SIGNAL(RunDirectoryChanged(QString)), saver, SLOT(SetRunDir(QString)), Qt::DirectConnection);
+    connect(view, SIGNAL(SetSaveStatus(bool)), saver, SLOT(Enable(bool)), Qt::DirectConnection);
 }
 
 void Controller::Test()

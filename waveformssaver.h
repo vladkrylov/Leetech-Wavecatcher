@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include "WaveCat64ch_Lib.h"
+#include "wavecatcher.h"
 
 #include <QObject>
 #include <QFile>
@@ -18,13 +19,19 @@ public:
 
 public slots:
     void SaveData(const WAVECAT64CH_ChannelDataStruct *channel);
+    void SetChannelsToSave(int channel, bool status);
+    void SetRunDir(QString path);
+    void Enable(bool status);
 
 signals:
 
 private:
+    bool saveEnabled;
     QString filenameBase;
     QFile** txtOutFiles;
     QTextStream* out;
+
+    bool saveChannel[N_CHANNELS];
 
 };
 
