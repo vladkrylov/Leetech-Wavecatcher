@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QDebug>
+#include <QElapsedTimer>
 
 #include <stdlib.h>
 
@@ -18,7 +19,9 @@
 #include <TGraph.h>
 #include <TFrame.h>
 #include <TTimer.h>
+
 #include "canvas.h"
+#include "wavecatcher.h"
 
 //------------------------------------------------------------------------------
 
@@ -74,7 +77,7 @@ void QRootCanvas::mousePressEvent( QMouseEvent *e )
             break;
          case Qt::RightButton :
             // does not work properly on Linux...
-            // ...adding setAttribute(Qt::WA_PaintOnScreen, true) 
+            // ...adding setAttribute(Qt::WA_PaintOnScreen, true)
             // seems to cure the problem
             fCanvas->HandleInput(kButton3Down, e->x(), e->y());
             break;
@@ -99,7 +102,7 @@ void QRootCanvas::mouseReleaseEvent( QMouseEvent *e )
             break;
          case Qt::RightButton :
             // does not work properly on Linux...
-            // ...adding setAttribute(Qt::WA_PaintOnScreen, true) 
+            // ...adding setAttribute(Qt::WA_PaintOnScreen, true)
             // seems to cure the problem
             fCanvas->HandleInput(kButton3Up, e->x(), e->y());
             break;
@@ -134,95 +137,104 @@ void QRootCanvas::paintEvent( QPaintEvent * )
 //------------------------------------------------------------------------------
 
 //______________________________________________________________________________
-QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent)
+QMainCanvas::QMainCanvas(QWidget *parent) : QWidget(parent),
+    N_HORIZONTAL_DIVISIONS(16),
+    N_VERTICAL_DIVISIONS(9)
 {
    // QMainCanvas constructor.
 
    QVBoxLayout *l = new QVBoxLayout(this);
    l->addWidget(canvas = new QRootCanvas(this));
-   l->addWidget(b = new QPushButton("&Draw Histogram", this));
-   connect(b, SIGNAL(clicked()), this, SLOT(clicked1()));
-   fRootTimer = new QTimer(this);
-   QObject::connect( fRootTimer, SIGNAL(timeout()), this, SLOT(handle_root_events()) );
-   fRootTimer->start(20);
-}
-
-//______________________________________________________________________________
-void QMainCanvas::clicked1()
-{
-   // Handle the "Draw Histogram" button clicked() event.
-
-   static TH1F *h1f = 0;
-   new TFormula("form1","abs(sin(x)/x)");
-   TF1 *sqroot = new TF1("sqroot","x*gaus(0) + [3]*form1", 0, 10);
-   sqroot->SetParameters(10, 4, 1, 20);
-
-   // Create a one dimensional histogram (one float per bin)
-   // and fill it following the distribution in function sqroot.
-   canvas->getCanvas()->Clear();
-   canvas->getCanvas()->cd();
-   canvas->getCanvas()->SetBorderMode(0);
-   canvas->getCanvas()->SetFillColor(0);
    canvas->getCanvas()->SetGrid();
+   canvas->getCanvas()->Pad()->SetGrid();
 
-   static TGraph* test_gr = new TGraph();
-   for (int i = 0; i < 100; ++i) {
-       test_gr->SetPoint(i, i, i*i);
+   h = 900;
+   for (int ch = 0; ch < N_CHANNELS; ++ch) {
+       gr[ch] = new TGraph();
+       gr[ch]->SetLineColor(ch+1);
+
+       scales[ch] = 1;
+       enabled[ch] = true;
    }
-
-   test_gr->SetFillColor(kViolet + 2);
-   test_gr->SetFillStyle(3001);
-   test_gr->Draw();
-
-   canvas->getCanvas()->Modified();
-   canvas->getCanvas()->Resize();
-   canvas->getCanvas()->Update();
+   gr[0]->SetLineColor(46);
 }
 
-//______________________________________________________________________________
-void QMainCanvas::handle_root_events()
-{
-   //call the inner loop of ROOT
-   gSystem->ProcessEvents();
-}
+//void QMainCanvas::handle_root_events()
+//{
+//   //call the inner loop of ROOT
+//   gSystem->ProcessEvents();
+//}
 
-//______________________________________________________________________________
 void QMainCanvas::changeEvent(QEvent * e)
 {
-   if (e->type() == QEvent ::WindowStateChange) {
-      QWindowStateChangeEvent * event = static_cast< QWindowStateChangeEvent * >( e );
-      if (( event->oldState() & Qt::WindowMaximized ) ||
-          ( event->oldState() & Qt::WindowMinimized ) ||
-          ( event->oldState() == Qt::WindowNoState && 
-            this->windowState() == Qt::WindowMaximized )) {
-         if (canvas->getCanvas()) {
-            canvas->getCanvas()->Resize();
-            canvas->getCanvas()->Update();
-         }
-      }
-   }
+//   if (e->type() == QEvent ::WindowStateChange) {
+//      QWindowStateChangeEvent * event = static_cast< QWindowStateChangeEvent * >( e );
+//      if (( event->oldState() & Qt::WindowMaximized ) ||
+//          ( event->oldState() & Qt::WindowMinimized ) ||
+//          ( event->oldState() == Qt::WindowNoState &&
+//            this->windowState() == Qt::WindowMaximized )) {
+//         if (canvas->getCanvas()) {
+//            canvas->getCanvas()->Resize();
+//            canvas->getCanvas()->Update();
+//         }
+//      }
+//   }
 }
 
-void QMainCanvas::DrawWaveform(float* data, int size)
+void QMainCanvas::DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData)
 {
-    canvas->getCanvas()->Clear();
-    canvas->getCanvas()->cd();
-    canvas->getCanvas()->SetBorderMode(0);
-    canvas->getCanvas()->SetFillColor(0);
-    canvas->getCanvas()->SetGrid();
+    QElapsedTimer eltim;
+    eltim.start();
 
-    static TGraph* gr = new TGraph();
-    for (int i = 0; i < size; ++i) {
-        gr->SetPoint(i, i, data[i]);
+//    int size = ChannelData[0].WaveformDataSize;
+
+    canvas->getCanvas()->Clear();
+//    canvas->getCanvas()->cd();
+//    canvas->getCanvas()->SetBorderMode(0);
+//    canvas->getCanvas()->SetFillColor(0);
+//    canvas->getCanvas()->SetGrid();
+
+//    gr[0]->Set(size);
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        if (enabled[ch]) {
+            for (int i = 0; i < xMaxInd-xMinInd; ++i) {
+                gr[ch]->Clear();
+                gr[ch]->Set(xMaxInd-xMinInd);
+                gr[ch]->SetPoint(i, i + xMinInd,
+                                  WAVECAT64CH_ADCTOVOLTS * 1000 * h/N_VERTICAL_DIVISIONS /scales[ch] * ChannelData[ch].WaveformData[i+xMinInd] + baselines[ch] * h / 100.);
+            }
+        }
     }
 
-    gr->SetFillColor(kViolet + 2);
-    gr->SetFillStyle(3001);
-    gr->Draw();
+    // draw first enabled channel
+    int drawn = -1;
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        if (enabled[ch]) {
+            gr[ch]->SetFillColor(kViolet + 2);
+            gr[ch]->SetFillStyle(3001);
+            gr[ch]->GetXaxis()->SetLimits(xMinInd, xMaxInd);
+            gr[ch]->GetXaxis()->SetLabelSize(0);
+            gr[ch]->GetXaxis()->SetNdivisions(N_HORIZONTAL_DIVISIONS, false);
+            gr[ch]->GetYaxis()->SetNdivisions(N_VERTICAL_DIVISIONS, false);
+            gr[ch]->GetYaxis()->SetLabelSize(0);
+            gr[ch]->SetMaximum(h);
+            gr[ch]->SetMinimum(0);
+
+            gr[ch]->Draw();
+            drawn = ch;
+            break;
+        }
+    }
+    // draw other channels
+    for (int ch = 0; ch < N_CHANNELS; ++ch) {
+        if ((enabled[ch]) && (drawn != ch)) gr[ch]->Draw("same");
+    }
 
     canvas->getCanvas()->Modified();
     canvas->getCanvas()->Resize();
     canvas->getCanvas()->Update();
+
+//    qDebug() << eltim.elapsed();
 }
 
 

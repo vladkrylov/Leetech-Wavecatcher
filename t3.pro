@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+
 CONFIG   += qt warn_on thread
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -14,18 +15,24 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-        canvas.cpp
+    mainwindow.cpp \
+    canvas.cpp \
+    wavecatcher.cpp \
+    controller.cpp \
+    waveformssaver.cpp
 
 HEADERS  += mainwindow.h \
     WaveCat64ch_Lib.h \
     WaveCat64Ch_RatePanel.h \
     WaveCat64Ch_Sample.h \
-    canvas.h
+    canvas.h \
+    wavecatcher.h \
+    controller.h \
+    waveformssaver.h
 
 INCLUDEPATH += "C:\Program Files (x86)\National Instruments\CVI2009\include"
 
-FORMS    += mainwindow.ui
+#FORMS    +=
 
 LIBS += -L"C:\Program Files (x86)\National Instruments\CVI2009\extlib\msvc" \
         -lcvirt -lcvi_lvrt -linstrsup

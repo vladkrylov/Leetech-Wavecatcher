@@ -3,13 +3,14 @@
 #define EXAMPLE_H
 
 #include <QWidget>
+#include "wavecatcher.h"
 
 class QPaintEvent;
 class QResizeEvent;
 class QMouseEvent;
-class QPushButton;
 class QTimer;
 class TCanvas;
+class TGraph;
 
 class QRootCanvas : public QWidget
 {
@@ -39,15 +40,30 @@ public:
    virtual ~QMainCanvas() {}
    virtual void changeEvent(QEvent * e);
 
-   void DrawWaveform(float* data, int size);
+   const int N_HORIZONTAL_DIVISIONS;
+   const int N_VERTICAL_DIVISIONS;
+
+   bool enabled[N_CHANNELS];
+   float baselines[N_CHANNELS];
+   float scales[N_CHANNELS];
+
+   int xMinInd;
+   int xMaxInd;
+
 
 public slots:
-   void clicked1();
-   void handle_root_events();
+//   void handle_root_events();
+   void DrawWaveforms(const WAVECAT64CH_ChannelDataStruct* ChannelData);
+
+private:
+   TGraph* gr[N_CHANNELS];
+
+   float h;
+
+
 
 protected:
    QRootCanvas    *canvas;
-   QPushButton    *b;
    QTimer         *fRootTimer;
 };
 
