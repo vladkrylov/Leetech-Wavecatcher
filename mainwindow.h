@@ -44,9 +44,13 @@ public:
     QComboBox* channelScaleBox;
     QLabel* channelScaleLabel2;
     QPushButton* channelScaleApplyToAllButton;
-    QLabel* channelOffsetLabel;
-    QSpinBox* channelOffsetBox;
-    QLabel* channelOffsetLabel2;
+
+    QLabel* channelHOffsetLabel;
+    QSpinBox* channelHOffsetBox;
+    QLabel* channelHOffsetLabel2;
+
+//    QSpacerItem* VSpacer1;
+    QFrame* horizontalLine3;
 
     QLabel* channelHScaleLabel;
     QComboBox* channelHScaleBox;

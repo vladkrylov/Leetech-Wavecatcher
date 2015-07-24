@@ -93,6 +93,7 @@ void MainWindow::ConstructGUI()
     runIDLine->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     runIDLine->setAlignment(Qt::AlignCenter);
 
+    rightPanelLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Maximum, QSizePolicy::Minimum));
     rightPanelLayout->addWidget(horizontalLine1 = new QFrame(this));
     horizontalLine1->setFrameShape(QFrame::HLine);
 //    horizontalLine1->setStyleSheet("background-color: #c0c0c0;");
@@ -118,6 +119,10 @@ void MainWindow::ConstructGUI()
         channelScaleBox->addItem(QString::number(Vscales[i]), Vscales[i]);
     }
     rightPanelLayout->addWidget(channelScaleApplyToAllButton = new QPushButton(tr("Apply scale to all channels"), this));
+
+    rightPanelLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Maximum, QSizePolicy::Minimum));
+    rightPanelLayout->addWidget(horizontalLine3 = new QFrame(this));
+    horizontalLine3->setFrameShape(QFrame::HLine);
 
     QHBoxLayout* channelHScaleLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(channelHScaleLayout);
@@ -145,12 +150,13 @@ void MainWindow::ConstructGUI()
 
     QHBoxLayout* channelOffsetLayout = new QHBoxLayout();
     rightPanelLayout->addLayout(channelOffsetLayout);
-    channelOffsetLayout->addWidget(channelOffsetLabel = new QLabel(tr("Offset:"), this));
-    channelOffsetLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    channelOffsetLayout->addWidget(channelOffsetBox = new QSpinBox(this));
-    channelOffsetLayout->addWidget(channelOffsetLabel2 = new QLabel(tr("%"), this));
-    channelOffsetLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    channelOffsetLayout->addWidget(channelHOffsetLabel = new QLabel(tr("Offset:"), this));
+    channelHOffsetLabel->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    channelOffsetLayout->addWidget(channelHOffsetBox = new QSpinBox(this));
+    channelOffsetLayout->addWidget(channelHOffsetLabel2 = new QLabel(tr("%"), this));
+    channelHOffsetLabel2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
+    rightPanelLayout->addSpacerItem(new QSpacerItem(20, 20, QSizePolicy::Maximum, QSizePolicy::Minimum));
     rightPanelLayout->addWidget(horizontalLine2 = new QFrame(this));
     horizontalLine2->setFrameShape(QFrame::HLine);
 
@@ -202,7 +208,7 @@ void MainWindow::ConnectSignalsSlots()
     connect(channelScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetVerticalScale()));
     connect(channelHScaleBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetHorizontalScale()));
     connect(channelScaleApplyToAllButton, SIGNAL(clicked(bool)), this, SLOT(SetScales()));
-    connect(channelOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
+    connect(channelHOffsetBox, SIGNAL(valueChanged(int)), this, SLOT(SetOffset(int)));
     connect(horizontalPositionButton, SIGNAL(clicked(bool)), this, SLOT(OnPositionButtonClicked()));
     connect(saveDirButton, SIGNAL(clicked(bool)), this, SLOT(OnSaveDirButtonClicked()));
     connect(saveWfBox, SIGNAL(clicked(bool)), this, SLOT(OnSaveBoxClicked()));
@@ -367,7 +373,7 @@ void MainWindow::DisplayChannelSettings()
             qDebug() << "Channel " << channel << " has wrong scale";
 
         // set offset
-        channelOffsetBox->setValue((int)scope->baselines[channel]);
+        channelHOffsetBox->setValue((int)scope->baselines[channel]);
     }
 }
 
